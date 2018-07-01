@@ -1,0 +1,159 @@
+/**
+ * File              : services/wordpress/src/wp-content/plugins/draft-live-sync/css/style.css
+ * Author            : Camilo Tapia <camilo.tapia@gmail.com>
+ * Last Modified Date: 14.11.2017
+ * Last Modified By  : Camilo Tapia <camilo.tapia@gmail.com>
+ */
+
+.dls--resource-item {
+    display: flex;
+    vertical-align: center;
+    margin-bottom: .2rem;
+    align-items: center;
+}
+
+.dls--resource--name {
+    display: flex;
+    vertical-align: center;
+    align-items: center;
+    display: block;
+    text-decoration: none;
+}
+
+.dls--resource--name:hover {
+    text-decoration: underline;
+}
+
+.dls--resource-item-type {
+    background-color: #aaa;
+    color: white;
+    padding: .0rem .3rem;
+    margin: 0 .3rem 0 0;
+    font-size: .7rem;
+    min-width: 100px
+    border-radius: 3px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color .2s ease-out;
+}
+
+.dls--resource-item-type:hover {
+    background-color: pink;
+}
+
+.dls--resource-item-type-container {
+    width: 110px;
+}
+
+.dls--resource--wp-draft-status {
+    transition: fill .2s ease-out;
+    margin-right: .3rem;
+    color: grey;
+	fill: grey;
+	line-height: 0;
+    transition: all .3s ease-out;
+}
+
+
+.dls--resource--wp-draft-status:hover {
+	fill: pink;
+    stroke: pink;
+}
+
+.dls--resource--draft-live-status {
+    margin-right: .3rem;
+    color: grey;
+	fill: grey;
+	stroke: grey;
+	line-height: 0;
+    transition: all .3s ease-out;
+}
+
+.dsl-resource-error {
+    color: red;
+    stroke: red;
+	fill: red;
+}
+
+.dsl-resource-live {
+    color: green;
+    stroke: green;
+	fill: green;
+}
+
+.dsl-resource-checking,
+.dsl-resource-checking:hover {
+    stroke: lightblue;
+	fill: lightblue;
+}
+
+.dsl-resource-insync {
+    stroke: green;
+	fill: green;
+}
+
+.dsl-resource-update-done,
+.dsl-resource-update-done:hover {
+    fill: lightgreen;
+    stroke: green;
+}
+
+.dsl-resource-not-insync {
+    color: orange;
+    stroke: orange;
+    fill: orange;
+}
+
+.dls--clickable {
+	cursor: pointer;
+}
+
+.dlsc--status {
+    color: grey;
+    width: 100%;
+    text-align: center;
+    padding-bottom: .7rem;
+}
+
+.dlsc--wp-not-in-sync {
+    color: red;
+}
+
+#publish-to-live-action {
+    padding-top: .4rem;
+}
+
+.dsl--message-processing {
+    color: green;
+    font-weight: bold;
+}
+
+#unpublish-from-live {
+    margin-top: 10px;
+}
+
+#dls--percent {
+    margin-top: 2rem;
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    position: fixed;
+    background-color: #f9f9f9;
+    padding: 2rem 1.5rem;
+    right: 2rem;
+    top: 2rem;
+    text-align: center;
+    min-width: 100px;
+    border-radius: 5px;
+}
+
+#draft-sync--reset-tree-button {
+    margin-left: 1rem;
+}
+
+#draft-sync--status-message {
+    height: 20px;
+    margin-top: 1rem;
+    color: #666;
+    font-style: italic;
+}
