@@ -119,20 +119,10 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
 
         }
         
+        // This filter can be used to add endpoints to be synced that we cant get from wordpress in the normal way
         function get_other_resources() {
-
-            // TODO: This list should be moved to the settings page, or read automatically from ACF
-            $resources = array(
-                array('footer', '/json/api/general/footer'),
-                array('header', '/json/api/general/header'),
-                array('translations', '/json/api/general/translations'),
-                array('general', '/json/api/general/general'),
-                array('gtm', '/json/api/general/gtm'),
-                array('rate-calculator', '/json/api/general/rate-calculator'),
-            );
-
+            $resources = apply_filters('dls_additional_endpoints', array());
             return $resources;
-
         }
 
         function hide_publishing_actions(){
@@ -203,10 +193,20 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             // We always use the wordpress host too
             array_push($replace_host_list, $original_host);
 
+            // Add the list gathered from the options
+            $extra_hosts = $this->settings_page->get_replace_hosts();
+
+            // Merge all lists
+            $replace_host_list = array_merge($replace_host_list, $extra_hosts);
+
+            // We always use the wordpress host too
+            $original_host = get_site_url();
+            array_push($replace_host_list, $original_host);
+
             foreach ($replace_host_list as $host) {
                 $replace_string = addcslashes($host, '/');
                 $replaced_permalink = str_replace($host, '', $replaced_permalink);
-                // error_log(' BEFORE: ' . $permalink . ' -- AFTER: ' . $replaced_permalink . ' ---- ' . $host);
+                // error_log(' REPLACE: ' . $replace_string . ' -- AFTER: ' . $replaced_permalink);
             }
 
             return $replaced_permalink;
@@ -350,9 +350,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
 
                 // This check is in place because when we run this plugin in the normal rawb 
                 // setup, with an API proxy, we asume that we get the data in a 'data' key.
-                // Without the API, we get it directly in the root. Rather crude check, which we
-                // should improve.
-                // TODO: Check who answers and adapt where we get the data.
+                // Without the API, we get it directly in the root.
                 if (isset($json_result->data)) {
                     return $json_result->data;
                 }
