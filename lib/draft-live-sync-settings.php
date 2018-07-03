@@ -33,6 +33,19 @@
 			return $list;
 		}
 
+		public function get_auto_redirect_to_admin_page() {
+			$value = get_option( 'dls_settings_auto_redirect_to_admin_page' ) == 'true';
+			return $value;
+        }
+
+		public function get_overwrite_viewable_permalink() {
+            $value = get_option( 'dls_overwrite_viewable_permalink' ) == 'true';
+            if ($value) {
+                return get_option( 'dls_overwrite_viewable_permalink_host' );
+            }
+            return false;
+		}
+
 		public function get_enabled_post_types() {
 
 			$enabled_list = array();
@@ -94,26 +107,39 @@
 
 			if (!get_option('dls_settings_replace_host_list')) {
 				add_option('dls_settings_replace_host_list');
-			}
+            }
 
+			if (!get_option('dls_settings_auto_redirect_to_admin_page')) {
+				add_option('dls_settings_auto_redirect_to_admin_page');
+            }
+
+			if (!get_option('dls_overwrite_viewable_permalink')) {
+				add_option('dls_overwrite_viewable_permalink');
+            }
+
+   			if (!get_option('dls_overwrite_viewable_permalink_host')) {
+				add_option('dls_overwrite_viewable_permalink_host');
+			}
+     
             register_setting( 'my_option_group', 'dls_settings_enabled_post_types', array( $this, 'sanitize' ) );
             register_setting( 'my_option_group', 'dls_settings_replace_host_list', array( $this, 'sanitize' ) );
+            register_setting( 'my_option_group', 'dls_settings_auto_redirect_to_admin_page', array( $this, 'sanitize' ) );
+            register_setting( 'my_option_group', 'dls_overwrite_viewable_permalink', array( $this, 'sanitize' ) );
+            register_setting( 'my_option_group', 'dls_overwrite_viewable_permalink_host', array( $this, 'sanitize' ) );
 
-            add_settings_section(
-                'setting_section_id', 'Post types settings', array( $this, 'print_post_types_info' ), 'my-setting-admin' 
-            );  
+            add_settings_section( 'setting_section_id', 'Post types settings', array( $this, 'print_post_types_info' ), 'my-setting-admin' );  
 
-			add_settings_field(
-				'dls-settings', 'Select post types', array( $this, 'post_type_callback'), 'my-setting-admin', 'setting_section_id' 
-			);      
+			add_settings_field( 'dls-settings', 'Select post types', array( $this, 'post_type_callback'), 'my-setting-admin', 'setting_section_id' );      
 
-            add_settings_section(
-                'settings_replace_hosts', 'Hosts to replace', array( $this, 'print_replace_hosts_info' ), 'my-setting-admin' 
-            );  
+            add_settings_section( 'settings_replace_hosts', 'Hosts to replace', array( $this, 'print_replace_hosts_info' ), 'my-setting-admin' );  
+			add_settings_field( 'dls-settings', 'List of hosts', array( $this, 'replace_hosts_callback'), 'my-setting-admin', 'settings_replace_hosts' );      
 
-			add_settings_field(
-				'dls-settings', 'List of hosts', array( $this, 'replace_hosts_callback'), 'my-setting-admin', 'settings_replace_hosts' 
-			);      
+            add_settings_section( 'settings_auto_redirect_to_admin', 'Auto redirect to admin page', array( $this, 'print_auto_redirect_to_admin' ), 'my-setting-admin' );  
+			add_settings_field( 'dls-settings', 'Auto redirect to admin page', array( $this, 'auto_redirect_to_admin_callback'), 'my-setting-admin', 'settings_auto_redirect_to_admin' );      
+
+            add_settings_section( 'settings_overwrite_viewable_permalink', 'Overwrite the viewable permalink', array( $this, 'print_overwrite_viewable_permalink' ), 'my-setting-admin' );  
+			add_settings_field( 'dls-settings', 'Overwrite the viewable permalink', array( $this, 'overwrite_viewable_permalink_callback'), 'my-setting-admin', 'settings_overwrite_viewable_permalink' );      
+			add_settings_field( 'dls-settings-overwrite_viewable_permalink_host', 'Overwrite the viewable permalink host', array( $this, 'overwrite_viewable_permalink_host_callback'), 'my-setting-admin', 'settings_overwrite_viewable_permalink' );      
 
 		}
 
@@ -134,6 +160,14 @@
 
 		public function print_replace_hosts_info() {
             print 'List of all hosts that should be removed. One per line. Important: Be careful with this replace/remove functionality. It will remove all instances of the text.';
+        }
+
+		public function print_auto_redirect_to_admin() {
+            print 'Should we automatically redirect to the admin page?';
+		}
+
+		public function print_overwrite_viewable_permalink() {
+            print 'If we want to overwrite the vieable permalink when editing a page, this is where to do it';
 		}
 
 		public function post_type_callback() {
@@ -160,6 +194,25 @@
 		public function replace_hosts_callback() {
 			$value = get_option( 'dls_settings_replace_host_list' );
 			echo "<div><textarea style=\"width: 50%; height: 200px;\" name=\"dls_settings_replace_host_list\" />$value</textarea></div>";
+		}
+
+		public function auto_redirect_to_admin_callback() {
+
+            $value = get_option( 'dls_settings_auto_redirect_to_admin_page');
+            $checked = $value == 'true' ? ' checked' : '';
+            printf("<div><input type=\"checkbox\" name=\"dls_settings_auto_redirect_to_admin_page\" value=\"true\" $checked/> Yes</div>");
+
+		}
+
+		public function overwrite_viewable_permalink_callback() {
+			$value = get_option( 'dls_overwrite_viewable_permalink' );
+            $checked = $value == 'true' ? ' checked' : '';
+            printf("<div><input type=\"checkbox\" name=\"dls_overwrite_viewable_permalink\" value=\"true\" $checked/> Yes</div>");
+		}
+
+		public function overwrite_viewable_permalink_host_callback() {
+			$value = get_option( 'dls_overwrite_viewable_permalink_host' );
+            printf("<div><input style=\"width: 400px\" type=\"text\" name=\"dls_overwrite_viewable_permalink_host\" value=\"$value\" /></div>");
 		}
 
 

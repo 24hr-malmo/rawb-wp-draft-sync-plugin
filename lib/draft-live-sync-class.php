@@ -85,7 +85,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 add_filter( 'admin_menu', array( &$this, 'add_admin_pages'), 10, 2 );
                 add_action( 'parse_request', array( &$this, 'parse_requests'));
                 add_filter( 'gettext', array( &$this, 'change_publish_button'), 10, 2 );
-                //add_filter('get_sample_permalink_html', array( &$this, 'set_correct_permalink'));
+                add_filter('get_sample_permalink_html', array( &$this, 'set_correct_permalink'));
                 add_action( 'admin_enqueue_scripts', array(&$this, 'enqueue_admin_scripts' ));
                 add_action( 'admin_head-post.php', array( &$this, 'hide_publishing_actions'));
                 add_action( 'admin_head-post-new.php', array( &$this, 'hide_publishing_actions'));
@@ -94,7 +94,10 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 add_filter('dls_replace_hosts', array(&$this, 'filter_the_content_replace_hosts'), 100);
 
 				// Add hook to ACFs save action to publish on each save
-				add_action('acf/save_post', array( &$this, 'publish_options_to_draft'), 20, 1);
+                add_action('acf/save_post', array( &$this, 'publish_options_to_draft'), 20, 1);
+
+                // This will check if we should redirect normal requests to the admin page
+                add_action('template_redirect', array(&$this, 'redirect_to_wp_admin'), 20);
 
                 $this->add_actions_for_options_pages();
 
@@ -103,6 +106,28 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             return $this;
 
         }
+
+        // Rediect if the request is a normal request
+        function redirect_to_wp_admin(){
+
+
+            $auto_redirect = $this->settings_page->get_auto_redirect_to_admin_page();
+
+            if ($auto_redirect) {
+
+                $proxy_name = isset($_SERVER['HTTP_PROXY_SERVICE']) ? $_SERVER['HTTP_PROXY_SERVICE'] : '';
+                $force_json = $_GET['json'];
+
+                // If its an api request, or if we have ?json=true, then we just show the normal JSON response
+                if ($proxy_name !== 'api' && $force_json !== 'true') {
+                    header("Location: /wp-admin");
+                    die();
+                }
+
+            }
+
+        }
+
 
         function add_actions_for_options_pages () {
 
@@ -148,13 +173,18 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             return $translation;
         }
 
+        // Show another permalink in the edit page view
         function set_correct_permalink($url) {
-            $public_host = getenv('FRONTEND_DRAFT_URL');
+
+            $public_host = $this->settings_page->get_overwrite_viewable_permalink();
             $wordpress_url = get_site_url();
-            // error_log($public_host);
-            // error_log($url);
-            // return $url;
-            return str_replace($wordpress_url, $public_host, $url);
+
+            if ($public_host) {
+                return str_replace($wordpress_url, $public_host, $url);
+            }
+
+            return $url;
+
         }
 
         function enqueue_admin_scripts($hook) {
