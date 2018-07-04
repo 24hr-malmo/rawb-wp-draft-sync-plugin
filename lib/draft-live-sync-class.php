@@ -18,6 +18,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
 
         private $pre_term_url;
         private $settings_page;
+        private $site_id;
 
         static function getInstance() {
             if (is_null(DraftLiveSync::$singleton)) {
@@ -34,7 +35,15 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             $this->api_token = $api_token;
             $this->short_init = $short_init;
             $this->plugin_dir = basename( $this->dir );
+
+            $this->site_id = apply_filters('dls_get_site_id', null);
+
+            if (!isset($this->site_id)) {
+                wp_die('Please add a dls_get_site_id filter in the theme code.');
+            }
+
             $this->init();
+
             DraftLiveSync::$singleton = $this;
 
             $this->settings_page = new DraftLiveSyncSettings($this);
@@ -246,6 +255,9 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
 
         function recreate_tree($target) {
 
+
+
+
             $ch = curl_init();
 
             $url = $this->content_draft_url . '/content-admin/recreate-tree/' . $target;
@@ -257,8 +269,9 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . $this->api_token,
-                'Content-Length: ' . strlen($data_string))
-            );
+                'Content-Length: ' . strlen($data_string),
+                'x-site-id:' . $this->site_id
+            ));
 
             $response = curl_exec($ch);
 
@@ -365,8 +378,9 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . $this->api_token,
-                'Content-Length: ' . strlen($data_string))
-            );
+                'Content-Length: ' . strlen($data_string),
+                'x-site-id:' . $this->site_id
+            ));
 
             // receive server response ...
             $response = curl_exec($ch);
@@ -412,7 +426,8 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                 'Content-Type: application/json',
-                'Authorization: Bearer ' . $this->api_token
+                'Authorization: Bearer ' . $this->api_token,
+                'x-site-id:' . $this->site_id
             ));
 
             // receive server response ...
@@ -472,8 +487,9 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . $this->api_token,
-                'Content-Length: ' . strlen($data_string))
-            );
+                'Content-Length: ' . strlen($data_string),
+                'x-site-id:' . $this->site_id
+            ));
 
             // receive server response ...
             $response = curl_exec($ch);
