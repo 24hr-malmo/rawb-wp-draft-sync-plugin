@@ -27,6 +27,11 @@
             add_action( 'admin_init', array( $this, 'page_init' ) );
         }
 
+		public function get_site_id() {
+			$value = get_option( 'dls_settings_site_id' );
+			return $value;
+		}
+
 		public function get_replace_hosts() {
 			$value = get_option( 'dls_settings_replace_host_list' );
             $list = explode("\n", $value);
@@ -101,6 +106,10 @@
          */
         public function page_init() {        
 
+			if (!get_option('dls_settings_site_id')) {
+				add_option('dls_settings_site_id');
+			}
+
 			if (!get_option('dls_settings_enabled_post_types')) {
 				add_option('dls_settings_enabled_post_types');
 			}
@@ -121,14 +130,17 @@
 				add_option('dls_overwrite_viewable_permalink_host');
 			}
      
+            register_setting( 'my_option_group', 'dls_settings_site_id', array( $this, 'sanitize' ) );
             register_setting( 'my_option_group', 'dls_settings_enabled_post_types', array( $this, 'sanitize' ) );
             register_setting( 'my_option_group', 'dls_settings_replace_host_list', array( $this, 'sanitize' ) );
             register_setting( 'my_option_group', 'dls_settings_auto_redirect_to_admin_page', array( $this, 'sanitize' ) );
             register_setting( 'my_option_group', 'dls_overwrite_viewable_permalink', array( $this, 'sanitize' ) );
             register_setting( 'my_option_group', 'dls_overwrite_viewable_permalink_host', array( $this, 'sanitize' ) );
 
-            add_settings_section( 'setting_section_id', 'Post types settings', array( $this, 'print_post_types_info' ), 'my-setting-admin' );  
+            add_settings_section( 'settings_site_id', 'Site ID', array( $this, 'print_site_id' ), 'my-setting-admin' );  
+			add_settings_field( 'dls-settings', 'Set the site id for this site', array( $this, 'site_id_callback'), 'my-setting-admin', 'settings_site_id' );      
 
+            add_settings_section( 'setting_section_id', 'Post types settings', array( $this, 'print_post_types_info' ), 'my-setting-admin' );  
 			add_settings_field( 'dls-settings', 'Select post types', array( $this, 'post_type_callback'), 'my-setting-admin', 'setting_section_id' );      
 
             add_settings_section( 'settings_replace_hosts', 'Hosts to replace', array( $this, 'print_replace_hosts_info' ), 'my-setting-admin' );  
@@ -152,6 +164,10 @@
 				$new_input['title'] = sanitize_text_field( $input['title'] );
 
 			return $input;
+        }
+
+		public function print_site_id() {
+            print 'Set the site_id for this site. DO NOT CHANGE THIS SETTING LIGHTLY!';
 		}
 
 		public function print_post_types_info() {
@@ -213,6 +229,11 @@
 		public function overwrite_viewable_permalink_host_callback() {
 			$value = get_option( 'dls_overwrite_viewable_permalink_host' );
             printf("<div><input style=\"width: 400px\" type=\"text\" name=\"dls_overwrite_viewable_permalink_host\" value=\"$value\" /></div>");
+		}
+
+		public function site_id_callback() {
+			$value = get_option( 'dls_settings_site_id' );
+            printf("<div><input style=\"width: 400px\" type=\"text\" name=\"dls_settings_site_id\" value=\"$value\" /></div>");
 		}
 
 

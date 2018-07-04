@@ -30,23 +30,25 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
         function __construct($dir, $version, $content_draft_url, $api_token, $short_init = false) {
 
             DraftLiveSync::$version = $version;
+
             $this->dir = $dir;
             $this->content_draft_url = $content_draft_url;
             $this->api_token = $api_token;
             $this->short_init = $short_init;
             $this->plugin_dir = basename( $this->dir );
 
-            $this->site_id = apply_filters('dls_get_site_id', null);
-
-            if (!isset($this->site_id)) {
-                wp_die('Please add a dls_get_site_id filter in the theme code.');
-            }
 
             $this->init();
 
             DraftLiveSync::$singleton = $this;
 
             $this->settings_page = new DraftLiveSyncSettings($this);
+
+            $this->site_id = $this->settings_page->get_site_id();
+
+            if (!isset($this->site_id) || $this->site_id === '' ) {
+                add_action( 'admin_notices', array(&$this, 'show_site_id_missing_warning'));
+            }
 
         }
 
@@ -114,6 +116,12 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
 
             return $this;
 
+        }
+
+        function show_site_id_missing_warning() {
+            $class = 'notice notice-error';
+            $message = __( 'Please set the site_id in the Draft Sync Plugin settings!', 'dls');
+            printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) ); 
         }
 
         // Rediect if the request is a normal request
@@ -255,8 +263,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
 
         function recreate_tree($target) {
 
-
-
+            $this->check_site_id();
 
             $ch = curl_init();
 
@@ -319,6 +326,8 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
         }
 
         function push_to_queue($permalink, $release = 'draft', $async = false, $status = 'publish', $check_only_draft_live = false, $sync_check = true, $sync_tree_and_cache = true) {
+
+            $this->check_site_id();
 
             $server_url = $this->content_draft_url . '/content-admin';
 
@@ -410,7 +419,16 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
 
         }
 
+        // Break if there is another site id
+        public function check_site_id() {
+            if (!isset($this->site_id) || $this->site_id === '' ) {
+                die();
+            }
+        }
+
         public function reindex_content($release = 'draft') {
+
+            $this->check_site_id();
 
             $server_url = $this->content_draft_url . '/content-admin';
 
@@ -447,6 +465,8 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
         }
 
         public function check_sync($resource, $only_draft_sync = false) {
+
+            $this->check_site_id();
 
             $server_url = $this->content_draft_url . '/content-admin/check-sync';
 

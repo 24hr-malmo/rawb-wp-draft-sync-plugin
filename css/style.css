@@ -14,7 +14,7 @@
 
 .dls--resource--name {
     display: flex;
-    vertical-align: center;
+    /* vertical-align: center; */
     align-items: center;
     display: block;
     text-decoration: none;
@@ -30,7 +30,7 @@
     padding: .0rem .3rem;
     margin: 0 .3rem 0 0;
     font-size: .7rem;
-    min-width: 100px
+    min-width: 100px;
     border-radius: 3px;
     text-align: center;
     cursor: pointer;
