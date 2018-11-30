@@ -295,14 +295,23 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
 
             $data = new stdclass();
 
+            $url = 'http://localhost' . $permalink;
+
+            // We need this to get hthe content beforehand in multisite
+            $host = $_SERVER['HTTP_HOST'];
+
             $ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, 'http://localhost' . $permalink);
+			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
- 			curl_setopt($ch, CURLOPT_HEADER, true);
+            curl_setopt($ch, CURLOPT_HEADER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                "host: $host",
+            ));
+
             $payload_response = curl_exec($ch);
 			$payload_data = explode("\n", $payload_response);
-			$payload_body = array_pop($payload_data);
-
+            $payload_body = array_pop($payload_data);
+            
             // Get all headers
 			$payload_headers = array();
 			foreach($payload_data as $payload_header_line) {
@@ -313,15 +322,12 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
 					$payload_headers[$key] = $value;
 				}
 			}
-
 			$data->payload = json_decode($payload_body);
-			$data->payload_headers = $payload_headers;
+            $data->payload_headers = $payload_headers;
 
             curl_close ($ch);
-
-
+            
             return $data;
-
 
         }
 
@@ -748,6 +754,13 @@ EOD;
 
         public function publish_term_to_draft($term_id, $tt_id, $taxonomy) {
             $permalink = get_tag_link($term_id);
+
+            // This check is to make sure that no url for a term can pass as the startpage of the site
+            // which happens if we save the menus and the permalink is generated with
+            // a querystring.
+            if (strpos($permalink, '?') !== false) {
+                return;
+            }
 
             $this->push_to_queue($permalink, 'draft', false, 'publish');
         }
