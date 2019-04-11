@@ -1,4 +1,4 @@
-jQuery(document).ready(function ($) {
+const syncDraft = ($) => {
 
     let settingsString = $('#dls-data').text();
     let percentContainer = $('#dls--percent');
@@ -170,4 +170,6 @@ jQuery(document).ready(function ($) {
 
     });
 
-});
+};
+
+export default syncDraft;

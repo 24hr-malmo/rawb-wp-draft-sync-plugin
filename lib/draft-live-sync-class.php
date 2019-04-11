@@ -37,7 +37,6 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             $this->short_init = $short_init;
             $this->plugin_dir = basename( $this->dir );
 
-
             $this->init();
 
             DraftLiveSync::$singleton = $this;
@@ -62,6 +61,8 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             $this->init = true;
 
             if (!$this->short_init) {
+
+                remove_action('template_redirect', 'redirect_canonical');
 
                 add_action( 'add_meta_boxes', array( &$this, 'meta_box_publish_status') );
 
@@ -96,7 +97,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 add_filter( 'admin_menu', array( &$this, 'add_admin_pages'), 10, 2 );
                 add_action( 'parse_request', array( &$this, 'parse_requests'));
                 add_filter( 'gettext', array( &$this, 'change_publish_button'), 10, 2 );
-                add_filter('get_sample_permalink_html', array( &$this, 'set_correct_permalink'));
+                add_filter( 'get_sample_permalink_html', array( &$this, 'set_correct_permalink'));
                 add_action( 'admin_enqueue_scripts', array(&$this, 'enqueue_admin_scripts' ));
                 add_action( 'admin_head-post.php', array( &$this, 'hide_publishing_actions'));
                 add_action( 'admin_head-post-new.php', array( &$this, 'hide_publishing_actions'));
@@ -110,12 +111,28 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 // This will check if we should redirect normal requests to the admin page
                 add_action('template_redirect', array(&$this, 'redirect_to_wp_admin'), 20);
 
+                add_action( 'pre_get_posts', array (&$this, 'prepare_query_for_wp_blocks'), 20);
+
                 $this->add_actions_for_options_pages();
 
             }
 
             return $this;
 
+        }
+
+        function get_preview_url() {
+            return $this->settings_page->get_preview_url();
+        }
+
+        // This will make sure we intersept all calls to /wp_blocks and expose the content of the wp_block as a normal post type. 
+        // In order for this to work, you need to have a template called single-wp_block.php
+        function prepare_query_for_wp_blocks ( $query ) {
+            global $wp_query;
+            global $wp;
+            if (strpos($wp->request, 'wp_block/') === 0) {
+                $query-> set('post_type' ,'wp_block');
+            }
         }
 
         function show_site_id_missing_warning() {
@@ -133,7 +150,8 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             if ($auto_redirect) {
 
                 $proxy_name = isset($_SERVER['HTTP_PROXY_SERVICE']) ? $_SERVER['HTTP_PROXY_SERVICE'] : '';
-                $force_json = $_GET['json'];
+
+                $force_json = isset($_GET['json']) ? $_GET['json'] == ' true' : false;
 
                 // If its an api request, or if we have ?json=true, then we just show the normal JSON response
                 if ($proxy_name !== 'api' && $force_json !== 'true') {
@@ -160,7 +178,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             }
 
         }
-        
+
         // This filter can be used to add endpoints to be synced that we cant get from wordpress in the normal way
         function get_other_resources() {
             $resources = apply_filters('dls_additional_endpoints', array());
@@ -205,23 +223,9 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
         }
 
         function enqueue_admin_scripts($hook) {
+            echo "<script id=\"dls-hooks\" type=\"application/json\">{ \"hook\": \"$hook\" }</script>";
             wp_enqueue_style( 'dls-css', plugins_url( '../css/style.css', __FILE__ ) );
-            wp_enqueue_script( 'dls-diff-script', plugins_url( '../js/libs/diff.js', __FILE__ ) );
-            if ( 'draftlive-sync_page_draft-live-sync-check-sync' == $hook ) {
-                wp_enqueue_script( 'dls-reset-script', plugins_url( '../js/sync-overview.js', __FILE__ ) );
-                wp_enqueue_style( 'dls-css', plugins_url( '../css/style.css', __FILE__ ) );
-                return;
-            } else if ( 'draftlive-sync_page_draft-live-sync-reset' == $hook ) {
-                wp_enqueue_script( 'dls-reset-script', plugins_url( '../js/sync-draft.js', __FILE__ ) );
-                wp_enqueue_script( 'dls-tree-script', plugins_url( '../js/sync-tree.js', __FILE__ ) );
-                wp_enqueue_style( 'dls-css', plugins_url( '../css/style.css', __FILE__ ) );
-                return;
-            } else if ( 'draftlive-sync_page_draft-live-sync-publish' == $hook ) {
-                wp_enqueue_script( 'dls-reset-script', plugins_url( '../js/sync-draft.js', __FILE__ ) );
-                wp_enqueue_script( 'dls-tree-script', plugins_url( '../js/sync-tree.js', __FILE__ ) );
-                wp_enqueue_style( 'dls-css', plugins_url( '../css/style.css', __FILE__ ) );
-                return;
-            }
+            wp_enqueue_script( 'dls-entry-script', plugins_url( '../js-dist/dls-entry-0.0.0.js', __FILE__ ) );
         }
 
         function replace_hosts($permalink) {
@@ -301,17 +305,20 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             $host = $_SERVER['HTTP_HOST'];
 
             $ch = curl_init();
+
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
             curl_setopt($ch, CURLOPT_HEADER, true);
             curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                "proxy-service: api",
                 "host: $host",
             ));
 
             $payload_response = curl_exec($ch);
+
 			$payload_data = explode("\n", $payload_response);
-            $payload_body = array_pop($payload_data);
-            
+			$payload_body = array_pop($payload_data);
+
             // Get all headers
 			$payload_headers = array();
 			foreach($payload_data as $payload_header_line) {
@@ -322,16 +329,19 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
 					$payload_headers[$key] = $value;
 				}
 			}
+
 			$data->payload = json_decode($payload_body);
             $data->payload_headers = $payload_headers;
 
             curl_close ($ch);
-            
+
+
             return $data;
+
 
         }
 
-        function push_to_queue($permalink, $release = 'draft', $async = false, $status = 'publish', $check_only_draft_live = false, $sync_check = true, $sync_tree_and_cache = true) {
+        function push_to_queue($permalink, $release = 'draft', $async = false, $status = 'publish', $check_only_draft_live = false, $sync_check = true, $sync_tree_and_cache = true, $custom_payload = false, $custom_payload_headers = false, $dont_fire_actions = false) {
 
             $this->check_site_id();
 
@@ -344,7 +354,6 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             } else {
                 $server_url = $server_url . '/publish';
             }
-
 
             // $post = get_post($post_id);
             // Since WP adds "__trashed_[counter]" to the permalink if its trashed, we need to fix it, otherwise, we cant update the content service correclty
@@ -361,11 +370,6 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             $data->sync_check = $sync_check;
             $data->sync_tree_and_cache = $sync_tree_and_cache;
 
-            // Dont publish playstation
-            if (strpos(strtolower($data->permalink), '/playstation') > -1) {
-                return;
-            }
-
             $data->async = $async;
             $data->release = $release;
 
@@ -375,13 +379,21 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
 
             $data->status = $status == 'trash' ? 'deleted' : $status;
 
+            // If we provide custom data, use it. This can be used to svae pages that actually dont exist
+            if ($custom_payload && $custom_payload_headers) {
 
+                $data->payload = $custom_payload;
+                $data->payloadHeaders = $custom_payload_headers;
 
-            // Fetch all data from the page
-            $content = $this->get_content($data->permalink);
-            $data->payload = $content->payload;
-            $data->payloadHeaders = $content->payload_headers;
+            } else {
 
+                // Fetch all data from the page
+                $content = $this->get_content($data->permalink);
+
+                $data->payload = $content->payload;
+                $data->payloadHeaders = $content->payload_headers;
+
+            }
 
             $data_string = json_encode($data);
 
@@ -406,6 +418,10 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             if ($httpcode === 200) {
 
                 $json_result = json_decode($response);
+
+                if (!$dont_fire_actions) {
+                    do_action( 'draft_live_sync_saved', $permalink, $data, $release, $data->status);
+                }
 
                 // This check is in place because when we run this plugin in the normal rawb 
                 // setup, with an API proxy, we asume that we get the data in a 'data' key.
@@ -714,7 +730,7 @@ EOD;
 
         }
 
-		public function delete_post ($post_id) {
+        public function delete_post ($post_id) {
 
             $permalink = get_permalink($post_id);
 			$post = get_post($post_id);
@@ -746,23 +762,35 @@ EOD;
                 return;
             }
 
+
+
             $permalink = get_permalink($post_id);
+
+            $permalink = str_replace( home_url(), "", $permalink);
+
+            if ($post->post_type === 'wp_block') {
+                $permalink = '/wp_block' . $permalink;
+            }
 
             $this->push_to_queue($permalink, 'draft', false, $post->post_status);
 
         }
 
         public function publish_term_to_draft($term_id, $tt_id, $taxonomy) {
+
             $permalink = get_tag_link($term_id);
 
             // This check is to make sure that no url for a term can pass as the startpage of the site
             // which happens if we save the menus and the permalink is generated with
             // a querystring.
-            if (strpos($permalink, '?') !== false) {
+            $withoutQuery = strtok($permalink, '?');
+            $withoutQuery = $this->replace_hosts($withoutQuery);
+            if ($withoutQuery == '/') {
                 return;
             }
 
             $this->push_to_queue($permalink, 'draft', false, 'publish');
+
         }
 
         public function pre_publish_term_to_draft($term_id, $tt_id, $taxonomy) {
@@ -1015,7 +1043,17 @@ EOD;
             foreach ( $posts as $post ) {
 
                 $permalink = get_permalink($post->ID);
+
+                // Make sure all permalinks are without the domain
+                $permalink = str_replace( home_url(), "", $permalink);
+
+                // Replace all domains with the list used in thte settings
                 $permalink = $this->replace_hosts($permalink);
+
+                // $ wp blocks are prefixed with 'wp_block' so we can fetch them with a template
+                if ($type === 'wp_block') {
+                    $permalink = '/wp_block' . $permalink;
+                }
 
                 $link_object = new stdclass();
                 $link_object->permalink = $permalink;
@@ -1172,6 +1210,28 @@ EOD;
         }
 
 
+        // Expose a ffunction to save settings to the content service. We could do this more generall
+        // but we keep it like this so we dont need to provide to much info everytime it has to be used
+        public function save_settings ($permalink, $content, $release, $status ) {
+
+            $content_headers = array();
+            $content_headers['x-content-id'] = $permalink;
+            $content_headers['x-content-document-type'] = 'settings';
+            $content_headers['x-content-parent'] = -1;
+            $content_headers['x-content-order'] = 0;
+            $content_headers['x-content-is'] = 'settings';
+            $content_headers['x-content-depends'] = 'none';
+            $content_headers['x-content-resource-last-updated'] = date('Y-m-d H:i:s.u +00:00', new DateTime());
+
+            if ($release == 'unpublish') {
+                // delete
+            } else {
+                $result = $this->push_to_queue($permalink, $release,  false, $status, false, false, false, $content, $content_headers, false);
+            }
+
+            return $result;
+
+        }
 
 
     }

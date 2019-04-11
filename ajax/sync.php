@@ -14,9 +14,12 @@
 
     $wp_base_dir = dirname($wp_base);
 
-    if(file_exists($wp_base_dir . '/wp-includes/formatting.php')) {
-        require( $wp_base_dir . '/wp-includes/formatting.php');
-    }
+    // Wordpress 5.1 Seems to have formatting.php loaded with wp-load
+    // So we dony need ot load it ourselves
+    //
+    //    if(file_exists($wp_base_dir . '/wp-includes/formatting.php')) {
+    //        require( $wp_base_dir . '/wp-includes/formatting.php');
+    //    }
 
     if(file_exists($wp_base_dir . '/wp-includes/link-template.php')) {
         require( $wp_base_dir . '/wp-includes/link-template.php');

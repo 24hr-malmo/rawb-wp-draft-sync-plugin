@@ -1,11 +1,10 @@
-jQuery(document).ready(function ($) {
+const syncTree = ($) => {
 
     let settingsString = $('#dls-data').text();
     let settings = JSON.parse(settingsString);
     let button = jQuery('#draft-sync--reset-tree-button');
     let status = jQuery('#draft-sync--status-message');
     let statusTimeout = -1;
-
 
     function setStatus(message) {
         clearTimeout(statusTimeout);
@@ -49,4 +48,6 @@ jQuery(document).ready(function ($) {
 
     }
 
-});
+};
+
+export default syncTree;

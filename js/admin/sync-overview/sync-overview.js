@@ -1,10 +1,4 @@
-/**
- * @file             : services/wordpress/src/wp-content/plugins/draft-live-sync/js/sync-overview.js
- * @author           : Camilo Tapia <camilo.tapia@gmail.com>
- * Last Modified Date: 14.11.2017
- * Last Modified By  : Camilo Tapia <camilo.tapia@gmail.com>
- */
-jQuery(document).ready(function ($) {
+const syncOverview = ($) => {
 
     let settingsString = $('#dls-data').text();
     let settings = JSON.parse(settingsString);
@@ -171,4 +165,6 @@ jQuery(document).ready(function ($) {
 
     });
 
-});
+};
+
+export default syncOverview;

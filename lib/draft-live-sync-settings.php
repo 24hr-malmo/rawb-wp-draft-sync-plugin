@@ -27,6 +27,11 @@
             add_action( 'admin_init', array( $this, 'page_init' ) );
         }
 
+		public function get_preview_url() {
+			$value = get_option( 'dls_settings_preview_url' );
+			return $value;
+		}
+
 		public function get_site_id() {
 			$value = get_option( 'dls_settings_site_id' );
 			return $value;
@@ -108,6 +113,10 @@
 
 			if (!get_option('dls_settings_site_id')) {
 				add_option('dls_settings_site_id');
+            }
+
+			if (!get_option('dls_settings_preview_url')) {
+				add_option('dls_settings_preview_url');
 			}
 
 			if (!get_option('dls_settings_enabled_post_types')) {
@@ -131,6 +140,7 @@
 			}
      
             register_setting( 'my_option_group', 'dls_settings_site_id', array( $this, 'sanitize' ) );
+            register_setting( 'my_option_group', 'dls_settings_preview_url', array( $this, 'sanitize' ) );
             register_setting( 'my_option_group', 'dls_settings_enabled_post_types', array( $this, 'sanitize' ) );
             register_setting( 'my_option_group', 'dls_settings_replace_host_list', array( $this, 'sanitize' ) );
             register_setting( 'my_option_group', 'dls_settings_auto_redirect_to_admin_page', array( $this, 'sanitize' ) );
@@ -139,6 +149,9 @@
 
             add_settings_section( 'settings_site_id', 'Site ID', array( $this, 'print_site_id' ), 'my-setting-admin' );  
 			add_settings_field( 'dls-settings', 'Set the site id for this site', array( $this, 'site_id_callback'), 'my-setting-admin', 'settings_site_id' );      
+
+            add_settings_section( 'settings_preview_url', 'Preview URL', array( $this, 'print_preview_url' ), 'my-setting-admin' );  
+			add_settings_field( 'dls-settings', 'Set the preview URL for this site', array( $this, 'preview_url_callback'), 'my-setting-admin', 'settings_preview_url' );      
 
             add_settings_section( 'setting_section_id', 'Post types settings', array( $this, 'print_post_types_info' ), 'my-setting-admin' );  
 			add_settings_field( 'dls-settings', 'Select post types', array( $this, 'post_type_callback'), 'my-setting-admin', 'setting_section_id' );      
@@ -168,6 +181,10 @@
 
 		public function print_site_id() {
             print 'Set the site_id for this site. DO NOT CHANGE THIS SETTING LIGHTLY!';
+		}
+
+		public function print_preview_url() {
+            print 'Set the preview url for this site (the url to the frontend).';
 		}
 
 		public function print_post_types_info() {
@@ -234,6 +251,11 @@
 		public function site_id_callback() {
 			$value = get_option( 'dls_settings_site_id' );
             printf("<div><input style=\"width: 400px\" type=\"text\" name=\"dls_settings_site_id\" value=\"$value\" /></div>");
+		}
+
+		public function preview_url_callback() {
+			$value = get_option( 'dls_settings_preview_url' );
+            printf("<div><input style=\"width: 400px\" type=\"text\" name=\"dls_settings_preview_url\" value=\"$value\" /></div>");
 		}
 
 
