@@ -666,8 +666,7 @@ EOD;
 
             <script>
                 jQuery(window).ready(function ($){
-                    var copyOfNavboxContent = $('#publish-status-meta-box-navbox-wrapper').clone();
-                    $('#publish-status-meta-box-navbox-wrapper').empty();
+                    var copyOfNavboxContent = $('#publish-status-meta-box-navbox-wrapper').detach();
                     copyOfNavboxContent.appendTo('#nav-menu-header');
                 });
             </script>
