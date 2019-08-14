@@ -15,6 +15,8 @@ jQuery(document).ready(function ($) {
 
     if (hookData.hook === 'post.php') {
         syncMetaBox($);
+    } else if (hookData.hook === 'nav-menus.php') {
+        syncMetaBox($);
     } else if (hookData.hook === 'draft-live-sync_page_draft-live-sync-reset') {
         adminSyncAll($);
     } else if (hookData.hook === 'draft-live-sync_page_draft-live-sync-publish') {
