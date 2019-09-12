@@ -406,8 +406,11 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . $this->api_token,
                 'Content-Length: ' . strlen($data_string),
-                'x-site-id:' . $this->site_id
+                'x-site-id:' . $this->site_id,
+                'x-site-hostname:' . $_SERVER['REMOTE_HOST'],
             ));
+
+            // error_log($_SERVER['REMOTE_HOST']);
 
             // receive server response ...
             $response = curl_exec($ch);
