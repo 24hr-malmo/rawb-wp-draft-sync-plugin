@@ -4,7 +4,7 @@
 Plugin Name: Draft/Live Sync for Content Service
 Plugin URI: http://24hr.se
 Description: Saves content to a Draft Content Service and gives the possibility to push the content to live
-Version: 0.9.6
+Version: 0.9.7
 Author: Camilo Tapia <camilo.tapia@24hr.se>
 */
 
@@ -19,6 +19,7 @@ if ( !defined( 'ABSPATH' ) ) {
 
     define('DraftLiveSyncVERSION', '0.9.6');
 
+    require_once( $dir . '/lib/draft-live-sync-wp-cron-fix.php' );
     require_once( $dir . '/lib/draft-live-sync-class.php' );
 
     function draft_live_sync_init() {
@@ -31,7 +32,6 @@ if ( !defined( 'ABSPATH' ) ) {
         if(class_exists( 'DraftLiveSync' )){
             global $draft_live_sync;
             $draft_live_sync = new DraftLiveSync($dir, DraftLiveSyncVERSION, $content_draft_url, $api_token);
-            // $draft_live_sync->init();
         }
 
     }
