@@ -37,11 +37,11 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             $this->short_init = $short_init;
             $this->plugin_dir = basename( $this->dir );
 
+            $this->settings_page = new DraftLiveSyncSettings($this);
+
             $this->init();
 
             DraftLiveSync::$singleton = $this;
-
-            $this->settings_page = new DraftLiveSyncSettings($this);
 
             $this->site_id = $this->settings_page->get_site_id();
 
