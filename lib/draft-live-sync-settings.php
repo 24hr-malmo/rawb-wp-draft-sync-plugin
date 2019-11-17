@@ -48,6 +48,11 @@
 			return $value;
         }
 
+		public function get_wordpress_not_in_docker() {
+			$value = get_option( 'dls_settings_wordpress_not_in_docker' ) == 'true';
+			return $value;
+        }
+
 		public function get_overwrite_viewable_permalink() {
             $value = get_option( 'dls_overwrite_viewable_permalink' ) == 'true';
             if ($value) {
@@ -131,6 +136,10 @@
 				add_option('dls_settings_auto_redirect_to_admin_page');
             }
 
+			if (!get_option('dls_settings_wordpress_not_in_docker')) {
+				add_option('dls_settings_wordpress_not_in_docker');
+            }
+
 			if (!get_option('dls_overwrite_viewable_permalink')) {
 				add_option('dls_overwrite_viewable_permalink');
             }
@@ -144,6 +153,7 @@
             register_setting( 'my_option_group', 'dls_settings_enabled_post_types', array( $this, 'sanitize' ) );
             register_setting( 'my_option_group', 'dls_settings_replace_host_list', array( $this, 'sanitize' ) );
             register_setting( 'my_option_group', 'dls_settings_auto_redirect_to_admin_page', array( $this, 'sanitize' ) );
+            register_setting( 'my_option_group', 'dls_settings_wordpress_not_in_docker', array( $this, 'sanitize' ) );
             register_setting( 'my_option_group', 'dls_overwrite_viewable_permalink', array( $this, 'sanitize' ) );
             register_setting( 'my_option_group', 'dls_overwrite_viewable_permalink_host', array( $this, 'sanitize' ) );
 
@@ -161,6 +171,9 @@
 
             add_settings_section( 'settings_auto_redirect_to_admin', 'Auto redirect to admin page', array( $this, 'print_auto_redirect_to_admin' ), 'my-setting-admin' );  
 			add_settings_field( 'dls-settings', 'Auto redirect to admin page', array( $this, 'auto_redirect_to_admin_callback'), 'my-setting-admin', 'settings_auto_redirect_to_admin' );      
+
+            add_settings_section( 'settings_wordpress_not_in_docker', 'Is Wordpress not running in docker?', array( $this, 'print_wordpress_not_running_in_docker' ), 'my-setting-admin' );  
+			add_settings_field( 'dls-settings', 'Is Wordpress running in docker', array( $this, 'wordpress_not_in_docker_callback'), 'my-setting-admin', 'settings_wordpress_not_in_docker' );      
 
             add_settings_section( 'settings_overwrite_viewable_permalink', 'Overwrite the viewable permalink', array( $this, 'print_overwrite_viewable_permalink' ), 'my-setting-admin' );  
 			add_settings_field( 'dls-settings', 'Overwrite the viewable permalink', array( $this, 'overwrite_viewable_permalink_callback'), 'my-setting-admin', 'settings_overwrite_viewable_permalink' );      
@@ -199,6 +212,10 @@
             print 'Should we automatically redirect to the admin page?';
 		}
 
+		public function print_wordpress_not_running_in_docker() {
+            print 'Is Wordpress not running in docker?';
+		}
+
 		public function print_overwrite_viewable_permalink() {
             print 'If we want to overwrite the vieable permalink when editing a page, this is where to do it';
 		}
@@ -235,6 +252,14 @@
             $checked = $value == 'true' ? ' checked' : '';
             printf("<div><input type=\"checkbox\" name=\"dls_settings_auto_redirect_to_admin_page\" value=\"true\" $checked/> Yes</div>");
 
+		}
+
+		public function wordpress_not_in_docker_callback() {
+            $value = get_option( 'dls_settings_wordpress_not_in_docker');
+            $checked = $value == 'true' ? ' checked' : '';
+            $not_in_docker_constant_exists = defined('RAWB_DLS_WP_NOT_IN_DOCKER');
+            $disabled = $not_in_docker_constant_exists ? 'disabled' : '';
+            printf("<div><input type=\"checkbox\" $disabled name=\"dls_settings_wordpress_not_in_docker\" value=\"true\" $checked/> Yes</div>");
 		}
 
 		public function overwrite_viewable_permalink_callback() {
