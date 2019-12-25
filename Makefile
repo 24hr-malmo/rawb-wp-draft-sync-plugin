@@ -1,3 +1,5 @@
+version := $(shell cat ./version.txt)
+
 clear:
 	rm -rf ./js-dist
 
@@ -5,4 +7,4 @@ dev: clear
 	./node_modules/webpack/bin/webpack.js --watch
 
 prod: clear
-	NODE_ENV=production ./node_modules/webpack/bin/webpack.js
+	VERSION=${version} NODE_ENV=production ./node_modules/webpack/bin/webpack.js

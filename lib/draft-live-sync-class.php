@@ -225,7 +225,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
         function enqueue_admin_scripts($hook) {
             echo "<script id=\"dls-hooks\" type=\"application/json\">{ \"hook\": \"$hook\" }</script>";
             wp_enqueue_style( 'dls-css', plugins_url( '../css/style.css', __FILE__ ) );
-            wp_enqueue_script( 'dls-entry-script', plugins_url( '../js-dist/dls-entry-0.0.0.js', __FILE__ ) );
+            wp_enqueue_script( 'dls-entry-script', plugins_url( '../js-dist/dls-entry-' . DraftLiveSync::$version . '.js', __FILE__ ) );
         }
 
         function replace_hosts($permalink) {

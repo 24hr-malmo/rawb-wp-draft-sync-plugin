@@ -1,14 +1,19 @@
 
 const syncMetaBox = ($) => {
 
+    let postDataString = $('#dls-post-data').text();
+
+    if (!postDataString) {
+        console.warn('Draft Live Sync plugin not activated for this post type');
+        return;
+    }
+
+
     wp.hooks.addAction('dls.post-saved', 'dls', () => {
         check();
     });
 
-    let postDataString = $('#dls-post-data').text();
-
     let postData = JSON.parse(postDataString);
-
     var syncButton = jQuery('#publish-to-live');
     var unpublishButton = jQuery('#unpublish-from-live');
 
