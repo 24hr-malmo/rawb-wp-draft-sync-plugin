@@ -1,4 +1,3 @@
-
 import hooks from './hooks';
 import syncMetaBox from './sync-meta-box';
 import adminSyncAll from './admin/sync-all';
@@ -23,6 +22,8 @@ jQuery(document).ready(function ($) {
         adminSyncAll($);
     } else if (hookData.hook === 'draft-live-sync_page_draft-live-sync-check-sync') {
         adminSyncOverview($);
+    } else if (!hookData.hook.includes('.php')) {
+        syncMetaBox($);
     }
 
 });

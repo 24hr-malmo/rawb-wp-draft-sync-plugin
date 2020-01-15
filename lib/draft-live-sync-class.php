@@ -14,6 +14,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
         protected $api_token;
         protected $init = false;
         protected $short_init = false;
+        private $js_script = '';
         static $singleton;
 
         private $pre_term_url;
@@ -36,6 +37,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             $this->api_token = $api_token;
             $this->short_init = $short_init;
             $this->plugin_dir = basename( $this->dir );
+            $this->js_script = plugins_url( '../js-dist/dls-entry-' . DraftLiveSync::$version . '.js', __FILE__ );
 
             $this->init();
 
@@ -225,7 +227,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
         function enqueue_admin_scripts($hook) {
             echo "<script id=\"dls-hooks\" type=\"application/json\">{ \"hook\": \"$hook\" }</script>";
             wp_enqueue_style( 'dls-css', plugins_url( '../css/style.css', __FILE__ ) );
-            wp_enqueue_script( 'dls-entry-script', plugins_url( '../js-dist/dls-entry-' . DraftLiveSync::$version . '.js', __FILE__ ) );
+            wp_enqueue_script( 'dls-entry-script', $this->js_script);
         }
 
         function replace_hosts($permalink) {
@@ -567,7 +569,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
 
         public function publish_status_meta_box_callback($post, $meta_box_object, $echo = true) {
 
-            wp_enqueue_script( 'dls-post-script', plugins_url( '../js/sync-post.js', __FILE__ ) );
+            wp_enqueue_script( 'dls-post-script', $this->js_script);
 
             $api_path = '';
             if (isset($meta_box_object) && !empty($meta_box_object['args'])) {
