@@ -92,6 +92,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 add_action( 'delete_term', array( &$this, 'post_publish_term_to_draft'), 1, 3);
                 add_action( 'wp_update_nav_menu', array( &$this, 'publish_menu_to_draft'), 10, 3);
                 add_action( 'wp_ajax_publish_to_live', array( &$this, 'ajax_publish_to_live') );
+                add_action( 'wp_ajax_save_to_draft', array( &$this, 'ajax_save_to_draft') );
                 add_action( 'wp_ajax_unpublish_from_live', array( &$this, 'ajax_unpublish_from_live') );
                 add_action( 'wp_ajax_check_sync', array( &$this, 'ajax_check_sync') );
                 add_action( 'wp_ajax_reset_tree', array( &$this, 'ajax_reset_tree') );
@@ -257,8 +258,10 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             array_push($replace_host_list, $original_host);
 
             foreach ($replace_host_list as $host) {
+                $host = preg_replace( "/\r|\n/", "", $host);
                 $replace_string = addcslashes($host, '/');
                 $replaced_permalink = str_replace($host, '', $replaced_permalink);
+                $replaced_permalink = str_replace($replace_string, '', $replaced_permalink);
                 // error_log(' REPLACE: ' . $replace_string . ' -- AFTER: ' . $replaced_permalink);
             }
 
@@ -345,6 +348,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
 
         function push_to_queue($permalink, $release = 'draft', $async = false, $status = 'publish', $check_only_draft_live = false, $sync_check = true, $sync_tree_and_cache = true, $custom_payload = false, $custom_payload_headers = false, $dont_fire_actions = false) {
 
+            $permalink = rtrim($permalink, '/');
             $this->check_site_id();
 
             $server_url = $this->content_draft_url . '/content-admin';
@@ -368,7 +372,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
 
             $data = new stdclass();
 
-            $data->permalink = $this->replace_hosts($permalink);
+            $data->permalink = rtrim($this->replace_hosts($permalink), '/');
             $data->sync_check = $sync_check;
             $data->sync_tree_and_cache = $sync_tree_and_cache;
 
@@ -523,6 +527,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
 
 
             $data->permalink = $this->replace_hosts($data->permalink);
+            $data->permalink = rtrim($data->permalink, '/');
 
             $data_string = json_encode($data);
 
@@ -852,6 +857,28 @@ EOD;
 
         }
 
+        public function ajax_save_to_draft() {
+
+            $reponse = array();
+
+            if (!empty($_POST['post_id'])) {
+                $id = $_POST['post_id'];
+                $post = get_post($post_id);
+                $permalink = get_permalink($id);
+                $response = $this->push_to_queue($permalink, 'draft', false, 'publish');
+            } else if (!empty($_POST['api_path'])){
+                $permalink = $_POST['api_path'];
+                $response = $this->push_to_queue($permalink, 'draft', false, 'publish');
+            }
+
+            header( "Content-Type: application/json" );
+            echo json_encode($response);
+
+            //Don't forget to always exit in the ajax function.
+            exit();
+
+        }
+
 
         public function ajax_publish_to_live() {
 
@@ -1060,7 +1087,7 @@ EOD;
                 }
 
                 $link_object = new stdclass();
-                $link_object->permalink = $permalink;
+                $link_object->permalink = rtrim($permalink, '/');
                 $link_object->type = $type;
 
                 array_push($list, $link_object);
@@ -1078,7 +1105,7 @@ EOD;
                 $permalink =  $this->replace_hosts($permalink);
 
                 $link_object = new stdclass();
-                $link_object->permalink = $permalink;
+                $link_object->permalink = rtrim($permalink, '/');
                 $link_object->type = 'tag';
 
                 array_push($list, $link_object);
@@ -1147,7 +1174,7 @@ EOD;
 			foreach ( $option_permalinks as $option_permalink ) {
                 $option = new stdclass();
                 $option->type = 'option';
-                $option->permalink = $option_permalink[1];
+                $option->permalink = rtrim($option_permalink[1], '/');
                 array_push($list, $option);
 			}
 
