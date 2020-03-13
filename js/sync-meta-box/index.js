@@ -68,13 +68,15 @@ const syncMetaBox = ($) => {
 
             syncStatus.html('Published to draft site (non-public)');
             syncStatus.removeClass('dlsc--wp-not-in-sync');
+            syncStatus.removeClass('dlsc--wp-not-in-sync-retrying');
 
         } else {
 
             if (result.contentInDraft) {
-                syncStatus.addClass('dlsc--wp-not-in-sync');
 
                 if (autoSyncDraftCounter < 3) {
+
+                    syncStatus.addClass('dlsc--wp-not-in-sync-retrying');
 
                     syncStatus.html('Draft not in sync.<br/>Trying to auto-sync... Please wait.');
 
@@ -93,6 +95,8 @@ const syncMetaBox = ($) => {
                     });
 
                 } else {
+                    syncStatus.removeClass('dlsc--wp-not-in-sync-retrying');
+                    syncStatus.addClass('dlsc--wp-not-in-sync');
                     syncStatus.html('Draft not in sync.<br/>Could not auto-sync. Please save to draft.');
                 }
  

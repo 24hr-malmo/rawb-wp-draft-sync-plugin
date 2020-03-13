@@ -43,6 +43,7 @@
 
 .dls--resource-item-type-container {
     width: 110px;
+    padding-right: 5px;
 }
 
 .dls--resource--wp-draft-status {
@@ -118,6 +119,10 @@
 .dlsc--wp-not-in-sync {
     color: red;
 }
+
+.dlsc--wp-not-in-sync-retrying {
+    color: orange;
+ }
 
 #publish-to-live-action {
     padding-top: .4rem;

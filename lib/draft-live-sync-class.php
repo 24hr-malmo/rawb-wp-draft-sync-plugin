@@ -983,6 +983,7 @@ EOD;
 
             print '<div class="wrap">';
             print "<h1>$title</h1>";
+            print "<p>This plugin handles all communication between Wordpress and the Content Services.</p>";
 
             print '</div>';
         }
