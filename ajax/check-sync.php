@@ -1,17 +1,4 @@
 <?php
-/**
- * File              : services/wordpress/src/wp-content/plugins/draft-live-sync/ajax/check-sync.php
- * @author           : Camilo Tapia <camilo.tapia@gmail.com>
- * Last Modified Date: 24.10.2017
- * Last Modified By  : Camilo Tapia <camilo.tapia@gmail.com>
- */
-
-    // Make sure this compatible with older wp installations
-    if (!function_exists('untrailingslashit')) {
-        function untrailingslashit( $string ) {
-            return rtrim( $string, '/\\' );
-        }
-    }
 
     define( 'SHORTINIT', true );
 

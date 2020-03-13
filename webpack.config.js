@@ -1,6 +1,17 @@
 require('@babel/polyfill');
-
+const fs = require('fs');
 const path = require('path');
+
+const pluginFileContent = fs.readFileSync('./index.php', 'utf8');
+const versionRe = /Version: ([\w\.]+)(\r|\n)/im;
+const versionMatch = versionRe.exec(pluginFileContent);
+
+if (!versionMatch) {
+    console.error('Version number not found in index.php. Please check webpack.config.js and index.php!');
+    process.exit(1);
+}
+
+const VERSION = versionMatch[1];
 
 module.exports = {
     mode: 'development',
@@ -44,7 +55,7 @@ module.exports = {
     },
     plugins: [ ],
     output: {
-        filename: `[name]-${process.env.VERSION || '0.0.0'}.js`,
+        filename: `[name]-${VERSION || '0.0.0'}.js`,
         chunkFilename: '[name].bundle.js',
         sourceMapFilename: '[file].map',
         path: path.join(__dirname, './js-dist')
