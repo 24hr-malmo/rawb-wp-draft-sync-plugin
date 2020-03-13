@@ -13,6 +13,8 @@ if (!versionMatch) {
 
 const VERSION = versionMatch[1];
 
+console.log('CREATING VERSION', VERSION);
+
 module.exports = {
     mode: 'development',
     context: path.join(__dirname, './js'),
