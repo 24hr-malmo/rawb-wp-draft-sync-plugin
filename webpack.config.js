@@ -13,7 +13,9 @@ if (!versionMatch) {
 
 const VERSION = versionMatch[1];
 
+console.log('');
 console.log('CREATING VERSION', VERSION);
+console.log('');
 
 module.exports = {
     mode: 'development',
