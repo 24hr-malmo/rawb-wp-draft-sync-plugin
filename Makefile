@@ -8,3 +8,5 @@ dev: clear
 
 prod: clear
 	VERSION=${version} NODE_ENV=production ./node_modules/webpack/bin/webpack.js
+	git add .
+	git commit . -m "build ${version}"

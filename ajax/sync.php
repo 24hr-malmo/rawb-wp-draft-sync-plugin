@@ -6,6 +6,13 @@
  * Last Modified By  : Camilo Tapia <camilo.tapia@gmail.com>
  */
 
+    // Make sure this compatible with older wp installations
+    if (!function_exists('untrailingslashit')) {
+        function untrailingslashit( $string ) {
+            return rtrim( $string, '/\\' );
+        }
+    }
+
     define( 'SHORTINIT', true );
 
     $wp_base = '../../../../wp-load.php';
