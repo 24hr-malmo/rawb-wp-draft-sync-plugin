@@ -9,9 +9,12 @@ const syncMetaBox = ($) => {
     }
 
 
-    wp.hooks.addAction('dls.post-saved', 'dls', () => {
-        check();
-    });
+    // Dont run this if its an older version of wp or not running gutenberg
+    if (wp && wp.hooks && wp.hooks.addAction) {
+        wp.hooks.addAction('dls.post-saved', 'dls', () => {
+            check();
+        });
+    }
 
     let postData = JSON.parse(postDataString);
     var syncButton = jQuery('#publish-to-live');

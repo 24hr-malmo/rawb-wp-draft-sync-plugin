@@ -10698,7 +10698,9 @@ jQuery(document).ready(function ($) {
   var hookData = {};
 
   try {
-    hookData = $('#dls-hooks').length > 0 ? JSON.parse($('#dls-hooks').html()) : null;
+    hookData = $('#dls-hooks').length > 0 ? JSON.parse($('#dls-hooks').html()) : {
+      hook: ''
+    };
   } catch (err) {}
 
   ;
@@ -10707,11 +10709,11 @@ jQuery(document).ready(function ($) {
     Object(_sync_meta_box__WEBPACK_IMPORTED_MODULE_1__["default"])($);
   } else if (hookData.hook === 'nav-menus.php') {
     Object(_sync_meta_box__WEBPACK_IMPORTED_MODULE_1__["default"])($);
-  } else if (hookData.hook === 'draft-live-sync_page_draft-live-sync-reset') {
+  } else if (hookData.hook.includes('sync_page_draft-live-sync-reset')) {
     Object(_admin_sync_all__WEBPACK_IMPORTED_MODULE_2__["default"])($);
-  } else if (hookData.hook === 'draft-live-sync_page_draft-live-sync-publish') {
+  } else if (hookData.hook.includes('sync_page_draft-live-sync-publish')) {
     Object(_admin_sync_all__WEBPACK_IMPORTED_MODULE_2__["default"])($);
-  } else if (hookData.hook === 'draft-live-sync_page_draft-live-sync-check-sync') {
+  } else if (hookData.hook.includes('sync_page_draft-live-sync-check-sync')) {
     Object(_admin_sync_overview__WEBPACK_IMPORTED_MODULE_3__["default"])($);
   } else if (!hookData.hook.includes('.php')) {
     Object(_sync_meta_box__WEBPACK_IMPORTED_MODULE_1__["default"])($);
@@ -10735,11 +10737,15 @@ var syncMetaBox = function syncMetaBox($) {
   if (!postDataString) {
     console.warn('Draft Live Sync plugin not activated for this post type');
     return;
+  } // Dont run this if its an older version of wp or not running gutenberg
+
+
+  if (wp && wp.hooks && wp.hooks.addAction) {
+    wp.hooks.addAction('dls.post-saved', 'dls', function () {
+      check();
+    });
   }
 
-  wp.hooks.addAction('dls.post-saved', 'dls', function () {
-    check();
-  });
   var postData = JSON.parse(postDataString);
   var syncButton = jQuery('#publish-to-live');
   var unpublishButton = jQuery('#unpublish-from-live');
@@ -10908,4 +10914,4 @@ module.exports = __webpack_require__(/*! ./index.js */"./index.js");
 /***/ })
 
 /******/ });
-//# sourceMappingURL=dls-entry-0.9.12.js.map
+//# sourceMappingURL=dls-entry-0.9.13.js.map
