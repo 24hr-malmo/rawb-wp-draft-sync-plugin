@@ -421,8 +421,8 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 'Content-Length: ' . strlen($data_string),
                 'x-site-id:' . $this->site_id,
                 'x-site-hostname:' . $_SERVER['REMOTE_HOST'],
-                'x-external-user-id': $user->ID,
-                'x-external-username': $user->user_login,
+                'x-external-user-id: ' . $user->ID,
+                'x-external-username: ' . $user->user_login,
             ));
 
             // error_log($_SERVER['REMOTE_HOST']);
