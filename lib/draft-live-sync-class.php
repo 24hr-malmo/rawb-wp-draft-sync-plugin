@@ -405,6 +405,13 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
 
             $ch = curl_init($server_url);
 
+            $user = new stdclass();
+
+            // In case we load this with short init?
+            if ( function_exists( 'wp_get_current_user' ) ) {
+                $user = wp_get_current_user();
+            }
+
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -414,6 +421,8 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 'Content-Length: ' . strlen($data_string),
                 'x-site-id:' . $this->site_id,
                 'x-site-hostname:' . $_SERVER['REMOTE_HOST'],
+                'x-external-user-id': $user->ID,
+                'x-external-username': $user->user_login,
             ));
 
             // error_log($_SERVER['REMOTE_HOST']);
