@@ -798,6 +798,12 @@ EOD;
 
             $permalink = get_tag_link($term_id);
 
+            $term = get_term($term_id);
+
+            if ($term->taxonomy !== 'category' || $term->taxonomy !== 'tag') {
+                return;
+            }
+
             // This check is to make sure that no url for a term can pass as the startpage of the site
             // which happens if we save the menus and the permalink is generated with
             // a querystring.
