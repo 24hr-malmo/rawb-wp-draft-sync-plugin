@@ -16,11 +16,16 @@
     require( ABSPATH . WPINC . '/class-wp-session-tokens.php' );
     require( ABSPATH . WPINC . '/class-wp-user-meta-session-tokens.php' );
 
-    // require( ABSPATH . WPINC . '/formatting.php' );
+    if (!function_exists('sanitize_user')) {
+        require( ABSPATH . WPINC . '/formatting.php' );
+    }
+    if (!function_exists('get_metadata')) {
+        require( ABSPATH . WPINC . '/meta.php' );
+    }
+
     require( ABSPATH . WPINC . '/capabilities.php' );
     require( ABSPATH . WPINC . '/query.php' );
     require( ABSPATH . WPINC . '/user.php' );
-    // require( ABSPATH . WPINC . '/meta.php' );
 
     // Define constants after multisite is loaded. Cookie-related constants may be overridden in ms_network_cookies().
     wp_cookie_constants( );
