@@ -1155,6 +1155,7 @@ EOD;
             $replace_host_list = array_merge($replace_host_list, $extra_hosts);
 
             foreach ($replace_host_list as $host) {
+                $host = str_replace("\r", '', $host);
                 $replace_string = addcslashes($host, '/');
                 $input = str_replace($host, '', $input);
                 $input = str_replace($replace_string, '', $input);
