@@ -5,6 +5,11 @@ import adminSyncOverview from './admin/sync-overview';
 
 jQuery(document).ready(function ($) {
 
+    // Turn off the pre publish dialog
+    if (wp && wp.data && wp.data.dispatch) {
+        wp.data.dispatch('core/editor').disablePublishSidebar();
+    }
+
     hooks();
 
     let hookData = {};

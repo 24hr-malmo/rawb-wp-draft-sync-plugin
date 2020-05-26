@@ -162,3 +162,46 @@
     color: #666;
     font-style: italic;
 }
+
+
+
+/* GUTENBERG OVERRIDES */
+.wp-block {
+  max-width: 1100px;
+}
+
+/* Removes advanced CSS option from block settings in editor  */
+.editor-block-inspector__advanced {
+   display: none
+}
+
+.editor-post-save-draft {
+    display: none;
+}
+
+.editor-post-switch-to-draft {
+    display: none;
+}
+
+.editor-post-preview {
+    display: none;
+}
+
+.editor-post-publish-panel__toggle:after {
+    content: 'Save to draft';
+    font-size: 13px;
+}
+
+.edit-post-header .components-button.editor-post-publish-panel__toggle {
+    font-size: 0px;
+}
+
+.editor-post-publish-button:after {
+    content: 'Save to draft';
+    font-size: 13px;
+}
+
+.edit-post-header .components-button.editor-post-publish-button {
+    font-size: 0px;
+}
+

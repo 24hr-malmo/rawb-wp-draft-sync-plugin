@@ -10694,6 +10694,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 jQuery(document).ready(function ($) {
+  // Turn off the pre publish dialog
+  if (wp && wp.data && wp.data.dispatch) {
+    wp.data.dispatch('core/editor').disablePublishSidebar();
+  }
+
   Object(_hooks__WEBPACK_IMPORTED_MODULE_0__["default"])();
   var hookData = {};
 
@@ -10916,4 +10921,4 @@ module.exports = __webpack_require__(/*! ./index.js */"./index.js");
 /***/ })
 
 /******/ });
-//# sourceMappingURL=dls-entry-0.9.25.js.map
+//# sourceMappingURL=dls-entry-0.9.26.js.map
