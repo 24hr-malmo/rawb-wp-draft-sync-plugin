@@ -600,7 +600,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 Show diff (raw)
             </button>';
 
-            if ($enable_diff_btn !== 'true' || !is_super_admin()) {
+            if ($enable_diff_btn !== 'true' || !is_admin()) {
                 $diff_btn = '';
             }
 
