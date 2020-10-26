@@ -95,6 +95,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 add_action( 'wp_ajax_save_to_draft', array( &$this, 'ajax_save_to_draft') );
                 add_action( 'wp_ajax_unpublish_from_live', array( &$this, 'ajax_unpublish_from_live') );
                 add_action( 'wp_ajax_check_sync', array( &$this, 'ajax_check_sync') );
+                add_action( 'wp_ajax_get_diff', array( &$this, 'ajax_get_diff') );
                 add_action( 'wp_ajax_reset_tree', array( &$this, 'ajax_reset_tree') );
                 add_action( 'wp_ajax_get_all_resources', array( &$this, 'ajax_get_all_resources') );
                 add_filter( 'admin_menu', array( &$this, 'add_admin_pages'), 10, 2 );
@@ -598,6 +599,14 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 <div name="publish-to-live-wp-draft-sync" style="" class="dlsc--status" id="status-of-wp-draft">Check draft content...</div>
                 <div name="publish-to-live" style="width: 100%;text-align: center;" class="button button-primary button-large button-disabled" id="publish-to-live">Check draft/live sync status...</div>
                 <div name="unpublish-from-live" style="width: 100%;text-align: center;" class="button button-secondary button-large button-disabled" id="unpublish-from-live">Check live status...</div>
+                <button 
+                    id="draft-live-diff"
+                    class="button button-secondary button-large"
+                    style="width: 100%;text-align: center;margin-top:10px;"
+                    disabled
+                >
+                    Show diff (raw)
+                </button>
             </div>
 
 EOD;
@@ -968,6 +977,34 @@ EOD;
             echo json_encode($response);
 
             //Don't forget to always exit in the ajax function.
+            exit();
+
+        }
+
+        function ajax_get_diff() {
+            if (!isset($_POST['post_id'])) {
+                exit();
+            }   
+
+            $post_id = $_POST['post_id'];
+
+            $url = $this->content_draft_url . '/resources/diff/' . $post_id;
+
+            $ch = curl_init();
+            
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $this->api_token,
+                'x-site-id:' . $this->site_id
+            ));
+
+            $response = curl_exec($ch);
+
+            curl_close($ch);
+
+            $this->send_json($response);
             exit();
 
         }

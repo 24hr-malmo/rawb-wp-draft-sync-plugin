@@ -10727,6 +10727,58 @@ jQuery(document).ready(function ($) {
 
 /***/ }),
 
+/***/ "./sync-meta-box/diff-view.js":
+/*!************************************!*\
+  !*** ./sync-meta-box/diff-view.js ***!
+  \************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+function generateModalMarkup(diffHtml) {
+  var skeleton = "\n    <style>\n        .diff-modal {\n            box-sizing: border-box;\n            padding: 5px;\n            position: fixed;\n            top: 50%;\n            left: 50%;\n            transform: translate(-50%, -50%);\n            width: 100%;\n            height: 100%;\n            overflow-x: hidden;\n            overflow-y: auto;\n            z-index: 1000000000000;\n            background-color: white;\n        }\n\n        .diff-modal--close-btn-wrapper {\n            display: flex;\n            padding: 0 10px;\n        }\n\n        .diff-modal--close-btn-wrapper button.diff-modal--close-btn {\n            margin-bottom: 5px;\n            margin-left: auto;\n        }\n    </style>\n    <div class=\"diff-modal\">\n        <div class=\"diff-modal--close-btn-wrapper\">\n            <button class=\"button diff-modal--close-btn\">Close</button>\n        </div>\n        ".concat(diffHtml, "\n    </div>\n");
+  return skeleton;
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (function ($, postData) {
+  var btn = $('#draft-live-diff');
+  btn.prop('disabled', false);
+  btn.off('click'); // Prevent double event bindings
+
+  btn.on('click', function (e) {
+    e.preventDefault();
+    getDiff();
+  });
+  $(document).on('click', '.button.diff-modal--close-btn', closeModal);
+
+  function renderModal(html) {
+    $('body').append(html);
+    $('body').css('overflow', 'hidden');
+  }
+
+  function closeModal() {
+    $('body').css('overflow', 'auto');
+    $('.diff-modal').remove();
+  }
+
+  function getDiff() {
+    btn.prop('disabled', true);
+    $.post(ajaxurl, {
+      action: 'get_diff',
+      contentType: 'application/json',
+      post_id: postData.postId
+    }).done(function (data) {
+      var diffhHtml = JSON.parse(data).data;
+      var html = generateModalMarkup(diffhHtml);
+      renderModal(html);
+      btn.prop('disabled', false);
+    });
+  }
+});
+
+/***/ }),
+
 /***/ "./sync-meta-box/index.js":
 /*!********************************!*\
   !*** ./sync-meta-box/index.js ***!
@@ -10736,6 +10788,9 @@ jQuery(document).ready(function ($) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _diff_view__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./diff-view */ "./sync-meta-box/diff-view.js");
+
+
 var syncMetaBox = function syncMetaBox($) {
   var postDataString = $('#dls-post-data').text();
 
@@ -10754,6 +10809,7 @@ var syncMetaBox = function syncMetaBox($) {
   var postData = JSON.parse(postDataString);
   var syncButton = jQuery('#publish-to-live');
   var unpublishButton = jQuery('#unpublish-from-live');
+  Object(_diff_view__WEBPACK_IMPORTED_MODULE_0__["default"])($, postData);
   var syncStatus = jQuery('#status-of-wp-draft');
   var syncButtonEnabled = false;
   var unpublishButtonEnabled = false;
