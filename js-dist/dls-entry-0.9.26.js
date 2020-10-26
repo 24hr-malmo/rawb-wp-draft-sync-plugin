@@ -10743,6 +10743,11 @@ function generateModalMarkup(diffHtml) {
 
 /* harmony default export */ __webpack_exports__["default"] = (function ($, postData) {
   var btn = $('#draft-live-diff');
+
+  if (!btn.length) {
+    return;
+  }
+
   btn.prop('disabled', false);
   btn.off('click'); // Prevent double event bindings
 

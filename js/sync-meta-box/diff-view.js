@@ -38,6 +38,9 @@ function generateModalMarkup(diffHtml) {
 
 export default ($, postData) => {
     const btn = $('#draft-live-diff');
+    if (!btn.length) {
+        return;
+    }
     btn.prop('disabled', false);
 
     btn.off('click'); // Prevent double event bindings

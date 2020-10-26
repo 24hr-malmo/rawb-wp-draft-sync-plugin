@@ -590,6 +590,19 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             if (isset($meta_box_object) && !empty($meta_box_object['args'])) {
                 $api_path = $meta_box_object['args']['api_path'];
             }
+            $enable_diff_btn = get_option('dls_settings_enable_diff_viewer');
+            $diff_btn = '<button 
+                id="draft-live-diff"
+                class="button button-secondary button-large"
+                style="width: 100%;text-align: center;margin-top:10px;"
+                disabled
+            >
+                Show diff (raw)
+            </button>';
+
+            if ($enable_diff_btn !== 'true' || !is_super_admin()) {
+                $diff_btn = '';
+            }
 
             $output = <<<EOD
 
@@ -599,14 +612,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 <div name="publish-to-live-wp-draft-sync" style="" class="dlsc--status" id="status-of-wp-draft">Check draft content...</div>
                 <div name="publish-to-live" style="width: 100%;text-align: center;" class="button button-primary button-large button-disabled" id="publish-to-live">Check draft/live sync status...</div>
                 <div name="unpublish-from-live" style="width: 100%;text-align: center;" class="button button-secondary button-large button-disabled" id="unpublish-from-live">Check live status...</div>
-                <button 
-                    id="draft-live-diff"
-                    class="button button-secondary button-large"
-                    style="width: 100%;text-align: center;margin-top:10px;"
-                    disabled
-                >
-                    Show diff (raw)
-                </button>
+                $diff_btn
             </div>
 
 EOD;
