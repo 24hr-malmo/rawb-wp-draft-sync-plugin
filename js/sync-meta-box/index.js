@@ -1,4 +1,4 @@
-
+import draftLiveDiffBtnHandler from './diff-view';
 const syncMetaBox = ($) => {
 
     let postDataString = $('#dls-post-data').text();
@@ -19,7 +19,7 @@ const syncMetaBox = ($) => {
     let postData = JSON.parse(postDataString);
     var syncButton = jQuery('#publish-to-live');
     var unpublishButton = jQuery('#unpublish-from-live');
-
+    draftLiveDiffBtnHandler($, postData);
     var syncStatus = jQuery('#status-of-wp-draft');
     var syncButtonEnabled = false;
     var unpublishButtonEnabled = false;
