@@ -1,3 +1,6 @@
+import 'diff2html/bundles/css/diff2html.min.css'
+const diff2html = require('diff2html');
+
 function generateModalMarkup(diffHtml) {
     const skeleton = `
     <style>
@@ -69,8 +72,13 @@ export default ($, postData) => {
             contentType: 'application/json',
             post_id: postData.postId,
         }).done(data => {
-            const diffhHtml = JSON.parse(data).data;
-            const html = generateModalMarkup(diffhHtml);
+            const diffJson = JSON.parse(data).data;
+            const diffHtml = diff2html.html(diffJson, {
+                drawFileList: true,
+                matching: 'lines',
+                outputFormat: 'side-by-side',
+            });
+            const html = generateModalMarkup(diffHtml);
             renderModal(html);
             btn.prop('disabled', false);
         });
