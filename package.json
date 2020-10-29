@@ -18,7 +18,12 @@
     "@babel/preset-env": "7.4.3",
     "@wordpress/hooks": "2.2.0",
     "babel-loader": "8.0.5",
+    "diff2html": "^3.1.15",
     "webpack": "4.29.6",
     "webpack-cli": "3.3.0"
+  },
+  "devDependencies": {
+    "css-loader": "^5.0.0",
+    "style-loader": "^2.0.0"
   }
 }
