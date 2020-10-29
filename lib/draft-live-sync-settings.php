@@ -139,11 +139,16 @@
 				add_option('dls_overwrite_viewable_permalink_host');
 			}
      
+   			if (!get_option('dls_settings_enable_diff_viewer')) {
+				add_option('dls_settings_enable_diff_viewer');
+			}
+     
             register_setting( 'my_option_group', 'dls_settings_site_id', array( $this, 'sanitize' ) );
             register_setting( 'my_option_group', 'dls_settings_preview_url', array( $this, 'sanitize' ) );
             register_setting( 'my_option_group', 'dls_settings_enabled_post_types', array( $this, 'sanitize' ) );
             register_setting( 'my_option_group', 'dls_settings_replace_host_list', array( $this, 'sanitize' ) );
             register_setting( 'my_option_group', 'dls_settings_auto_redirect_to_admin_page', array( $this, 'sanitize' ) );
+            register_setting( 'my_option_group', 'dls_settings_enable_diff_viewer', array( $this, 'sanitize' ) );
             register_setting( 'my_option_group', 'dls_overwrite_viewable_permalink', array( $this, 'sanitize' ) );
             register_setting( 'my_option_group', 'dls_overwrite_viewable_permalink_host', array( $this, 'sanitize' ) );
 
@@ -161,7 +166,10 @@
 
             add_settings_section( 'settings_auto_redirect_to_admin', 'Auto redirect to admin page', array( $this, 'print_auto_redirect_to_admin' ), 'my-setting-admin' );  
 			add_settings_field( 'dls-settings', 'Auto redirect to admin page', array( $this, 'auto_redirect_to_admin_callback'), 'my-setting-admin', 'settings_auto_redirect_to_admin' );      
-
+			
+			add_settings_section( 'settings_enable_diff_viewer', 'Enable the diff button?', array( $this, 'print_enable_diff_viewer' ), 'my-setting-admin' );  
+			add_settings_section( 'settings_enable_diff_viewer', 'Enable the diff button?', array( $this, 'enable_diff_viewer_callback' ), 'my-setting-admin' );  
+			
             add_settings_section( 'settings_overwrite_viewable_permalink', 'Overwrite the viewable permalink', array( $this, 'print_overwrite_viewable_permalink' ), 'my-setting-admin' );  
 			add_settings_field( 'dls-settings', 'Overwrite the viewable permalink', array( $this, 'overwrite_viewable_permalink_callback'), 'my-setting-admin', 'settings_overwrite_viewable_permalink' );      
 			add_settings_field( 'dls-settings-overwrite_viewable_permalink_host', 'Overwrite the viewable permalink host', array( $this, 'overwrite_viewable_permalink_host_callback'), 'my-setting-admin', 'settings_overwrite_viewable_permalink' );      
@@ -203,6 +211,10 @@
             print 'If we want to overwrite the vieable permalink when editing a page, this is where to do it';
 		}
 
+		public function print_enable_diff_viewer() {
+			print 'If the diff button should be available to use.';			
+		}
+
 		public function post_type_callback() {
 
 			$options = get_option( 'dls_settings_enabled_post_types' );
@@ -234,6 +246,14 @@
             $value = get_option( 'dls_settings_auto_redirect_to_admin_page');
             $checked = $value == 'true' ? ' checked' : '';
             printf("<div><input type=\"checkbox\" name=\"dls_settings_auto_redirect_to_admin_page\" value=\"true\" $checked/> Yes</div>");
+
+		}
+
+		public function enable_diff_viewer_callback() {
+
+            $value = get_option( 'dls_settings_enable_diff_viewer');
+            $checked = $value == 'true' ? ' checked' : '';
+            printf("<div><input type=\"checkbox\" name=\"dls_settings_enable_diff_viewer\" value=\"true\" $checked/> Yes</div>");
 
 		}
 
