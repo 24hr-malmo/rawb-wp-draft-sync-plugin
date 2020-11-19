@@ -1,4 +1,18 @@
 import draftLiveDiffBtnHandler from './diff-view';
+
+const commentButton = jQuery('#comment-button');
+const input = jQuery('#comment-input');
+
+commentButton.off('click').on('click', function() {
+
+    if(input.hasClass('display-none')) {
+        input.removeClass('display-none');
+    } else {
+        input.addClass('display-none');
+    }
+
+});
+
 const syncMetaBox = ($) => {
 
     let postDataString = $('#dls-post-data').text();
@@ -82,6 +96,9 @@ const syncMetaBox = ($) => {
 
                     autoSyncDraftCounter++;
 
+                    const input = jQuery('#comment-input');
+                    const comment = input.val();
+
                     jQuery.ajax({
                         type: "POST",
                         url: "/wp-admin/admin-ajax.php",
@@ -89,6 +106,7 @@ const syncMetaBox = ($) => {
                             action: 'save_to_draft',
                             post_id: postData.postId,
                             api_path: postData.apiPath,
+                            comment: comment,
                         }
                     }).done(function( msg ) {
                         setSyncStatus(msg);
@@ -114,6 +132,10 @@ const syncMetaBox = ($) => {
 
     const check = () => {
 
+        const input = jQuery('#comment-input');
+        console.log('this is comment in middle', input.val());
+        const comment = input.val();
+        console.log('this is comment before adding', comment);
         jQuery.ajax({
             type: "POST",
             url: "/wp-admin/admin-ajax.php",
@@ -121,6 +143,7 @@ const syncMetaBox = ($) => {
                 action: 'check_sync',
                 post_id: postData.postId,
                 api_path: postData.apiPath,
+                comment: comment,
             }
         }).done(function( msg ) {
 
@@ -133,22 +156,31 @@ const syncMetaBox = ($) => {
 
                     if (ok) {
 
-                        syncStatus.addClass('dsl--message-processing');
-                        syncStatus.html('Publishing...');
-                        //syncButton.html('Publishing...');
-                        syncButton.addClass('button-disabled');
+                        if(comment) {
+                            console.log('this is comment', input.val());
+                            let confirmation = confirm('There is a flag/comment connected to this post, are you really sure you want to publish this to the public live site?');
 
-                        jQuery.ajax({
-                            type: "POST",
-                            url: "/wp-admin/admin-ajax.php",
-                            data: {
-                                action: 'publish_to_live',
-                                post_id: postData.postId,
-                                api_path: postData.apiPath,
+                            if(confirmation) {
+                                syncStatus.addClass('dsl--message-processing');
+                                syncStatus.html('Publishing...');
+                                //syncButton.html('Publishing...');
+                                syncButton.addClass('button-disabled');
+
+                                jQuery.ajax({
+                                    type: "POST",
+                                    url: "/wp-admin/admin-ajax.php",
+                                    data: {
+                                        action: 'publish_to_live',
+                                        post_id: postData.postId,
+                                        api_path: postData.apiPath,
+                                    }
+                                }).done(function( msg ) {
+                                    setSyncStatus(msg);
+                                });
                             }
-                        }).done(function( msg ) {
-                            setSyncStatus(msg);
-                        });
+
+                        }
+                        
                     }
                 }
             });
@@ -192,6 +224,8 @@ const syncMetaBox = ($) => {
                     }
                 }
             });
+
+            
 
         });
 

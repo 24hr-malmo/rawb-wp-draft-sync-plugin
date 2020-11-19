@@ -15092,6 +15092,15 @@ function generateModalMarkup(diffHtml) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _diff_view__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./diff-view */ "./sync-meta-box/diff-view.js");
 
+var commentButton = jQuery('#comment-button');
+var input = jQuery('#comment-input');
+commentButton.off('click').on('click', function () {
+  if (input.hasClass('display-none')) {
+    input.removeClass('display-none');
+  } else {
+    input.addClass('display-none');
+  }
+});
 
 var syncMetaBox = function syncMetaBox($) {
   var postDataString = $('#dls-post-data').text();
@@ -15162,13 +15171,19 @@ var syncMetaBox = function syncMetaBox($) {
           syncStatus.addClass('dlsc--wp-not-in-sync-retrying');
           syncStatus.html('Draft not in sync.<br/>Trying to auto-sync... Please wait.');
           autoSyncDraftCounter++;
+
+          var _input = jQuery('#comment-input');
+
+          var comment = _input.val();
+
           jQuery.ajax({
             type: "POST",
             url: "/wp-admin/admin-ajax.php",
             data: {
               action: 'save_to_draft',
               post_id: postData.postId,
-              api_path: postData.apiPath
+              api_path: postData.apiPath,
+              comment: comment
             }
           }).done(function (msg) {
             setSyncStatus(msg);
@@ -15189,13 +15204,18 @@ var syncMetaBox = function syncMetaBox($) {
   }
 
   var check = function check() {
+    var input = jQuery('#comment-input');
+    console.log('this is comment in middle', input.val());
+    var comment = input.val();
+    console.log('this is comment before adding', comment);
     jQuery.ajax({
       type: "POST",
       url: "/wp-admin/admin-ajax.php",
       data: {
         action: 'check_sync',
         post_id: postData.postId,
-        api_path: postData.apiPath
+        api_path: postData.apiPath,
+        comment: comment
       }
     }).done(function (msg) {
       setSyncStatus(msg);
@@ -15204,21 +15224,28 @@ var syncMetaBox = function syncMetaBox($) {
           var ok = confirm('This will publish the content to the public live site. Are you sure?');
 
           if (ok) {
-            syncStatus.addClass('dsl--message-processing');
-            syncStatus.html('Publishing...'); //syncButton.html('Publishing...');
+            if (comment) {
+              console.log('this is comment', input.val());
+              var confirmation = confirm('There is a flag/comment connected to this post, are you really sure you want to publish this to the public live site?');
 
-            syncButton.addClass('button-disabled');
-            jQuery.ajax({
-              type: "POST",
-              url: "/wp-admin/admin-ajax.php",
-              data: {
-                action: 'publish_to_live',
-                post_id: postData.postId,
-                api_path: postData.apiPath
+              if (confirmation) {
+                syncStatus.addClass('dsl--message-processing');
+                syncStatus.html('Publishing...'); //syncButton.html('Publishing...');
+
+                syncButton.addClass('button-disabled');
+                jQuery.ajax({
+                  type: "POST",
+                  url: "/wp-admin/admin-ajax.php",
+                  data: {
+                    action: 'publish_to_live',
+                    post_id: postData.postId,
+                    api_path: postData.apiPath
+                  }
+                }).done(function (msg) {
+                  setSyncStatus(msg);
+                });
               }
-            }).done(function (msg) {
-              setSyncStatus(msg);
-            });
+            }
           }
         }
       });

@@ -604,11 +604,31 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 $diff_btn = '';
             }
 
+            $comment_style = <<<EOD
+                <style>
+                    input#comment-input {
+                        margin-bottom: 1rem;
+                    }
+                    .display-none {
+                        display:none;
+                    }
+                </style>
+            EOD;
+
+            $comment = get_post_meta($post->ID, "meta_comment", true);
+            //print_r(get_post_meta($post->ID, "meta_comment"));
+            //print_r($post);
+            //print_r($comment[0]);
+
+
             $output = <<<EOD
 
-            <script id="dls-post-data" type="application/json">{ "postId": "$post->ID", "apiPath": "$api_path" }</script>
+            <script id="dls-post-data" type="application/json">{ "postId": "$post->ID", "apiPath": "$api_path", "comment": "$comment" }</script>
+            $comment_style
             <div id="publish-to-live-action">
                 <div id="dls-percent"></div>
+                <div name="comment-button" id="comment-button" style="width: 100%;text-align: center;color:green;margin-bottom: 1rem;" class="button button-large">Add/view comment</div>
+                <input value="$comment" id="comment-input" class="display-none">
                 <div name="publish-to-live-wp-draft-sync" style="" class="dlsc--status" id="status-of-wp-draft">Check draft content...</div>
                 <div name="publish-to-live" style="width: 100%;text-align: center;" class="button button-primary button-large button-disabled" id="publish-to-live">Check draft/live sync status...</div>
                 <div name="unpublish-from-live" style="width: 100%;text-align: center;" class="button button-secondary button-large button-disabled" id="unpublish-from-live">Check live status...</div>
@@ -625,7 +645,7 @@ EOD;
 						border: 1px solid #eee;
 						margin-bottom: 20px;
 						border-color: #ddd;
-					}
+                    }
 				</style>
 EOD;
 
@@ -896,6 +916,8 @@ EOD;
                 $post = get_post($post_id);
                 $permalink = get_permalink($id);
                 $response = $this->push_to_queue($permalink, 'draft', false, 'publish');
+                $comment = $_POST['comment'];
+                update_post_meta($id, "meta_comment", $comment);
             } else if (!empty($_POST['api_path'])){
                 $permalink = $_POST['api_path'];
                 $response = $this->push_to_queue($permalink, 'draft', false, 'publish');
@@ -974,6 +996,8 @@ EOD;
                 if (!$only_draft_sync) {
                     $response = $this->check_sync($id, $only_draft_sync);
                 }
+                $comment = $_POST['comment'];
+                update_post_meta($id, "meta_comment", $comment);
             } else if (!empty($_POST['api_path'])){
                 $permalink = $_POST['api_path'];
                 $response = $this->check_sync($permalink, $only_draft_sync);
