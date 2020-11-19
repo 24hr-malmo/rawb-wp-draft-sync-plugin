@@ -616,10 +616,6 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             EOD;
 
             $comment = get_post_meta($post->ID, "meta_comment", true);
-            //print_r(get_post_meta($post->ID, "meta_comment"));
-            //print_r($post);
-            //print_r($comment[0]);
-
 
             $output = <<<EOD
 
@@ -945,6 +941,12 @@ EOD;
                 if ($post->post_type == 'nav_menu_item') {
                     $permalink = '/json/api/general/menu/header_menu';
                 }
+
+                $comment = $_POST['comment'];
+                delete_post_meta($id, "meta_comment", $comment);
+                // if(!empty($comment)) {
+                //     delete_post_meta($id, "meta_comment", $comment);
+                // }
 
                 $response = $this->push_to_queue($permalink, 'live', false, 'publish');
             } else if (!empty($_POST['api_path'])){
