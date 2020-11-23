@@ -624,7 +624,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             $comment_style
             <div id="publish-to-live-action">
                 <div id="dls-percent"></div>
-                <div name="comment-button" id="comment-button" style="width: 100%;text-align: center;color:green;margin-bottom: 1rem;" class="button button-large">Add/view comment</div>
+                <div name="comment-button" id="comment-button" style="width: 100%;text-align: center;color:green;margin-bottom: 1rem;" class="button button-large">Add comment</div>
                 <textarea id="comment-input" class="display-none">$comment</textarea>
                 <div name="publish-to-live-wp-draft-sync" style="" class="dlsc--status" id="status-of-wp-draft">Check draft content...</div>
                 <div name="publish-to-live" style="width: 100%;text-align: center;" class="button button-primary button-large button-disabled" id="publish-to-live">Check draft/live sync status...</div>

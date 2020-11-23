@@ -15093,13 +15093,24 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _diff_view__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./diff-view */ "./sync-meta-box/diff-view.js");
 
 var commentButton = jQuery('#comment-button');
-commentButton.off('click').on('click', function () {
-  var input = jQuery('#comment-input');
+var input = jQuery('#comment-input');
 
-  if (input.hasClass('display-none')) {
+if (input.val()) {
+  commentButton.text('Hide comment');
+  input.removeClass('display-none');
+}
+
+commentButton.off('click').on('click', function () {
+  if (input.hasClass('display-none') && input.val()) {
+    commentButton.text('Hide comment');
     input.removeClass('display-none');
-  } else {
+  } else if (input.val()) {
+    commentButton.text('View comment');
     input.addClass('display-none');
+  } else if (!input.hasClass('display-none') && !input.val()) {
+    input.addClass('display-none');
+  } else {
+    input.removeClass('display-none');
   }
 });
 
@@ -15172,8 +15183,11 @@ var syncMetaBox = function syncMetaBox($) {
           syncStatus.addClass('dlsc--wp-not-in-sync-retrying');
           syncStatus.html('Draft not in sync.<br/>Trying to auto-sync... Please wait.');
           autoSyncDraftCounter++;
-          var input = jQuery('#comment-input');
-          var comment = input.val();
+
+          var _input = jQuery('#comment-input');
+
+          var comment = _input.val();
+
           jQuery.ajax({
             type: "POST",
             url: "/wp-admin/admin-ajax.php",
@@ -15203,9 +15217,7 @@ var syncMetaBox = function syncMetaBox($) {
 
   var check = function check() {
     var input = jQuery('#comment-input');
-    console.log('this is comment in middle', input.val());
     var comment = input.val();
-    console.log('this is comment before adding', comment);
     jQuery.ajax({
       type: "POST",
       url: "/wp-admin/admin-ajax.php",
@@ -15223,9 +15235,10 @@ var syncMetaBox = function syncMetaBox($) {
 
           if (ok) {
             if (comment) {
-              console.log('this is comment now', input.val());
               var confirmation = confirm('There is a flag/comment connected to this post, are you really sure you want to publish this to the public live site?');
               input.val('');
+              input.addClass('display-none');
+              jQuery('#comment-button').text('Add comment');
 
               if (confirmation) {
                 syncStatus.addClass('dsl--message-processing');
@@ -15244,6 +15257,22 @@ var syncMetaBox = function syncMetaBox($) {
                   setSyncStatus(msg);
                 });
               }
+            } else {
+              syncStatus.addClass('dsl--message-processing');
+              syncStatus.html('Publishing...'); //syncButton.html('Publishing...');
+
+              syncButton.addClass('button-disabled');
+              jQuery.ajax({
+                type: "POST",
+                url: "/wp-admin/admin-ajax.php",
+                data: {
+                  action: 'publish_to_live',
+                  post_id: postData.postId,
+                  api_path: postData.apiPath
+                }
+              }).done(function (msg) {
+                setSyncStatus(msg);
+              });
             }
           }
         }
