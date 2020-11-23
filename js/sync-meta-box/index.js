@@ -1,9 +1,10 @@
 import draftLiveDiffBtnHandler from './diff-view';
 
 const commentButton = jQuery('#comment-button');
-const input = jQuery('#comment-input');
 
 commentButton.off('click').on('click', function() {
+
+    const input = jQuery('#comment-input');
 
     if(input.hasClass('display-none')) {
         input.removeClass('display-none');
@@ -157,9 +158,10 @@ const syncMetaBox = ($) => {
                     if (ok) {
 
                         if(comment) {
-                            console.log('this is comment', input.val());
+                            console.log('this is comment now', input.val());
                             let confirmation = confirm('There is a flag/comment connected to this post, are you really sure you want to publish this to the public live site?');
 
+                            input.val('');
                             if(confirmation) {
                                 syncStatus.addClass('dsl--message-processing');
                                 syncStatus.html('Publishing...');

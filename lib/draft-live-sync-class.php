@@ -606,8 +606,9 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
 
             $comment_style = <<<EOD
                 <style>
-                    input#comment-input {
+                    #comment-input {
                         margin-bottom: 1rem;
+                        width: 100%;
                     }
                     .display-none {
                         display:none;
@@ -624,7 +625,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             <div id="publish-to-live-action">
                 <div id="dls-percent"></div>
                 <div name="comment-button" id="comment-button" style="width: 100%;text-align: center;color:green;margin-bottom: 1rem;" class="button button-large">Add/view comment</div>
-                <input value="$comment" id="comment-input" class="display-none">
+                <textarea id="comment-input" class="display-none">$comment</textarea>
                 <div name="publish-to-live-wp-draft-sync" style="" class="dlsc--status" id="status-of-wp-draft">Check draft content...</div>
                 <div name="publish-to-live" style="width: 100%;text-align: center;" class="button button-primary button-large button-disabled" id="publish-to-live">Check draft/live sync status...</div>
                 <div name="unpublish-from-live" style="width: 100%;text-align: center;" class="button button-secondary button-large button-disabled" id="unpublish-from-live">Check live status...</div>

@@ -15093,8 +15093,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _diff_view__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./diff-view */ "./sync-meta-box/diff-view.js");
 
 var commentButton = jQuery('#comment-button');
-var input = jQuery('#comment-input');
 commentButton.off('click').on('click', function () {
+  var input = jQuery('#comment-input');
+
   if (input.hasClass('display-none')) {
     input.removeClass('display-none');
   } else {
@@ -15171,11 +15172,8 @@ var syncMetaBox = function syncMetaBox($) {
           syncStatus.addClass('dlsc--wp-not-in-sync-retrying');
           syncStatus.html('Draft not in sync.<br/>Trying to auto-sync... Please wait.');
           autoSyncDraftCounter++;
-
-          var _input = jQuery('#comment-input');
-
-          var comment = _input.val();
-
+          var input = jQuery('#comment-input');
+          var comment = input.val();
           jQuery.ajax({
             type: "POST",
             url: "/wp-admin/admin-ajax.php",
@@ -15225,8 +15223,9 @@ var syncMetaBox = function syncMetaBox($) {
 
           if (ok) {
             if (comment) {
-              console.log('this is comment', input.val());
+              console.log('this is comment now', input.val());
               var confirmation = confirm('There is a flag/comment connected to this post, are you really sure you want to publish this to the public live site?');
+              input.val('');
 
               if (confirmation) {
                 syncStatus.addClass('dsl--message-processing');
