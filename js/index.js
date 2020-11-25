@@ -2,8 +2,11 @@ import hooks from './hooks';
 import syncMetaBox from './sync-meta-box';
 import adminSyncAll from './admin/sync-all';
 import adminSyncOverview from './admin/sync-overview';
+import commentBtnHandler from './comment-btn-handler';
 
 jQuery(document).ready(function ($) {
+
+    commentBtnHandler();
 
     // Turn off the pre publish dialog
     if (wp && wp.data && wp.data.dispatch) {

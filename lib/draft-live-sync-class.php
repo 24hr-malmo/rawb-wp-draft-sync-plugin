@@ -98,6 +98,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 add_action( 'wp_ajax_get_diff', array( &$this, 'ajax_get_diff') );
                 add_action( 'wp_ajax_reset_tree', array( &$this, 'ajax_reset_tree') );
                 add_action( 'wp_ajax_get_all_resources', array( &$this, 'ajax_get_all_resources') );
+                add_action( 'wp_ajax_save_comment', array( &$this, 'ajax_save_comment') );
                 add_filter( 'admin_menu', array( &$this, 'add_admin_pages'), 10, 2 );
                 add_action( 'parse_request', array( &$this, 'parse_requests'));
                 add_filter( 'gettext', array( &$this, 'change_publish_button'), 10, 2 );
@@ -988,6 +989,13 @@ EOD;
 
         }
 
+        function ajax_save_comment() {
+            $id = $_POST['post_id'];
+            $comment = $_POST['comment'];
+            update_post_meta($id, "meta_comment", $comment);
+            exit();
+        }
+
 
         public function ajax_check_sync() {
 
@@ -998,9 +1006,7 @@ EOD;
                 $id = $_POST['post_id'];
                 if (!$only_draft_sync) {
                     $response = $this->check_sync($id, $only_draft_sync);
-                }
-                $comment = $_POST['comment'];
-                update_post_meta($id, "meta_comment", $comment);
+                }  
             } else if (!empty($_POST['api_path'])){
                 $permalink = $_POST['api_path'];
                 $response = $this->check_sync($permalink, $only_draft_sync);

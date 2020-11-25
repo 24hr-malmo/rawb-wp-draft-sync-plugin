@@ -1,29 +1,5 @@
 import draftLiveDiffBtnHandler from './diff-view';
 
-const commentButton = jQuery('#comment-button');
-const input = jQuery('#comment-input');
-
-if(input.val()) {
-    commentButton.text('Hide comment')
-    input.removeClass('display-none');
-}
-
-commentButton.off('click').on('click', function() {
-
-    if(input.hasClass('display-none') && input.val()) {
-        commentButton.text('Hide comment');
-        input.removeClass('display-none');
-    } else if(input.val()) {
-        commentButton.text('View comment');
-        input.addClass('display-none');
-    } else if(!input.hasClass('display-none') && !input.val()) {
-        input.addClass('display-none');
-    } else {
-        input.removeClass('display-none');
-    } 
-
-});
-
 const syncMetaBox = ($) => {
 
     let postDataString = $('#dls-post-data').text();
@@ -107,9 +83,6 @@ const syncMetaBox = ($) => {
 
                     autoSyncDraftCounter++;
 
-                    const input = jQuery('#comment-input');
-                    const comment = input.val();
-
                     jQuery.ajax({
                         type: "POST",
                         url: "/wp-admin/admin-ajax.php",
@@ -117,7 +90,6 @@ const syncMetaBox = ($) => {
                             action: 'save_to_draft',
                             post_id: postData.postId,
                             api_path: postData.apiPath,
-                            comment: comment,
                         }
                     }).done(function( msg ) {
                         setSyncStatus(msg);
@@ -142,11 +114,7 @@ const syncMetaBox = ($) => {
     }
 
     const check = () => {
-
-        const input = jQuery('#comment-input');
-
-        const comment = input.val();
-
+        
         jQuery.ajax({
             type: "POST",
             url: "/wp-admin/admin-ajax.php",
@@ -154,7 +122,6 @@ const syncMetaBox = ($) => {
                 action: 'check_sync',
                 post_id: postData.postId,
                 api_path: postData.apiPath,
-                comment: comment,
             }
         }).done(function( msg ) {
 
@@ -162,58 +129,34 @@ const syncMetaBox = ($) => {
 
             syncButton.off('click').on('click', function() {
                 if (syncButtonEnabled) {
-
+                    const input = jQuery('#comment-input');
+                    const comment = input.val();
                     let ok = confirm('This will publish the content to the public live site. Are you sure?');
+                    let commentConfirmation = true;
+                    if (comment) {
+                        commentConfirmation = confirm(`There is a flag/comment connected to this post, are you really sure you want to publish this to the public live site?\n\nComment:\n\n${comment}`);
+                    }
 
-                    if (ok) {
+                    if (ok && commentConfirmation) {
+                        syncStatus.addClass('dsl--message-processing');
+                        syncStatus.html('Publishing...');
+                        //syncButton.html('Publishing...');
+                        syncButton.addClass('button-disabled');
 
-                        if(comment) {
-                            let confirmation = confirm('There is a flag/comment connected to this post, are you really sure you want to publish this to the public live site?');
-
+                        jQuery.ajax({
+                            type: "POST",
+                            url: "/wp-admin/admin-ajax.php",
+                            data: {
+                                action: 'publish_to_live',
+                                post_id: postData.postId,
+                                api_path: postData.apiPath,
+                            }
+                        }).done(function( msg ) {
                             input.val('');
                             input.addClass('display-none');
                             jQuery('#comment-button').text('Add comment');
-
-                            if(confirmation) {
-                                syncStatus.addClass('dsl--message-processing');
-                                syncStatus.html('Publishing...');
-                                //syncButton.html('Publishing...');
-                                syncButton.addClass('button-disabled');
-
-                                jQuery.ajax({
-                                    type: "POST",
-                                    url: "/wp-admin/admin-ajax.php",
-                                    data: {
-                                        action: 'publish_to_live',
-                                        post_id: postData.postId,
-                                        api_path: postData.apiPath,
-                                    }
-                                }).done(function( msg ) {
-                                    setSyncStatus(msg);
-                                });
-                            }
-
-                        } else {
-
-                            syncStatus.addClass('dsl--message-processing');
-                            syncStatus.html('Publishing...');
-                            //syncButton.html('Publishing...');
-                            syncButton.addClass('button-disabled');
-
-                            jQuery.ajax({
-                                type: "POST",
-                                url: "/wp-admin/admin-ajax.php",
-                                data: {
-                                    action: 'publish_to_live',
-                                    post_id: postData.postId,
-                                    api_path: postData.apiPath,
-                                }
-                            }).done(function( msg ) {
-                                setSyncStatus(msg);
-                            });
-                            
-                        }
-                        
+                            setSyncStatus(msg);
+                        });
                     }
                 }
             });
