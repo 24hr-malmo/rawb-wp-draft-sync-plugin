@@ -134,7 +134,7 @@ const syncMetaBox = ($) => {
                     let ok = confirm('This will publish the content to the public live site. Are you sure?');
                     let commentConfirmation = true;
                     if (comment) {
-                        commentConfirmation = confirm(`There is a flag/comment connected to this post, are you really sure you want to publish this to the public live site?\n\nComment:\n\n${comment}`);
+                        commentConfirmation = confirm(`There is a comment connected to this post, are you really sure you want to publish this to the public live site?\n\nComment:\n\n${comment}`);
                     }
 
                     if (ok && commentConfirmation) {

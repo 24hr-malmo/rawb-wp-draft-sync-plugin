@@ -914,8 +914,6 @@ EOD;
                 $post = get_post($post_id);
                 $permalink = get_permalink($id);
                 $response = $this->push_to_queue($permalink, 'draft', false, 'publish');
-                $comment = $_POST['comment'];
-                update_post_meta($id, "meta_comment", $comment);
             } else if (!empty($_POST['api_path'])){
                 $permalink = $_POST['api_path'];
                 $response = $this->push_to_queue($permalink, 'draft', false, 'publish');
@@ -946,9 +944,6 @@ EOD;
 
                 $comment = $_POST['comment'];
                 delete_post_meta($id, "meta_comment", $comment);
-                // if(!empty($comment)) {
-                //     delete_post_meta($id, "meta_comment", $comment);
-                // }
 
                 $response = $this->push_to_queue($permalink, 'live', false, 'publish');
             } else if (!empty($_POST['api_path'])){
