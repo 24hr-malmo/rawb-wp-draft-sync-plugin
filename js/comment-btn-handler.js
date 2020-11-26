@@ -1,7 +1,7 @@
 export default () => {
     const commentButton = jQuery('#comment-button');
     const input = jQuery('#comment-input');
-
+const inputVal = input.val();
     if(input.val()) {
         commentButton.text('Hide comment')
         input.removeClass('display-none');
