@@ -98,6 +98,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 add_action( 'wp_ajax_get_diff', array( &$this, 'ajax_get_diff') );
                 add_action( 'wp_ajax_reset_tree', array( &$this, 'ajax_reset_tree') );
                 add_action( 'wp_ajax_get_all_resources', array( &$this, 'ajax_get_all_resources') );
+                add_action( 'wp_ajax_save_comment', array( &$this, 'ajax_save_comment') );
                 add_filter( 'admin_menu', array( &$this, 'add_admin_pages'), 10, 2 );
                 add_action( 'parse_request', array( &$this, 'parse_requests'));
                 add_filter( 'gettext', array( &$this, 'change_publish_button'), 10, 2 );
@@ -604,11 +605,28 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 $diff_btn = '';
             }
 
+            $comment_style = <<<EOD
+                <style>
+                    #comment-input {
+                        margin-bottom: 1rem;
+                        width: 100%;
+                    }
+                    .display-none {
+                        display:none;
+                    }
+                </style>
+            EOD;
+
+            $comment = get_post_meta($post->ID, "meta_comment", true);
+
             $output = <<<EOD
 
-            <script id="dls-post-data" type="application/json">{ "postId": "$post->ID", "apiPath": "$api_path" }</script>
+            <script id="dls-post-data" type="application/json">{ "postId": "$post->ID", "apiPath": "$api_path", "comment": "$comment" }</script>
+            $comment_style
             <div id="publish-to-live-action">
                 <div id="dls-percent"></div>
+                <div name="comment-button" id="comment-button" style="width: 100%;text-align: center;color:green;margin-bottom: 1rem;" class="button button-large">Add comment</div>
+                <textarea id="comment-input" class="display-none">$comment</textarea>
                 <div name="publish-to-live-wp-draft-sync" style="" class="dlsc--status" id="status-of-wp-draft">Check draft content...</div>
                 <div name="publish-to-live" style="width: 100%;text-align: center;" class="button button-primary button-large button-disabled" id="publish-to-live">Check draft/live sync status...</div>
                 <div name="unpublish-from-live" style="width: 100%;text-align: center;" class="button button-secondary button-large button-disabled" id="unpublish-from-live">Check live status...</div>
@@ -625,7 +643,7 @@ EOD;
 						border: 1px solid #eee;
 						margin-bottom: 20px;
 						border-color: #ddd;
-					}
+                    }
 				</style>
 EOD;
 
@@ -924,6 +942,9 @@ EOD;
                     $permalink = '/json/api/general/menu/header_menu';
                 }
 
+                $comment = $_POST['comment'];
+                delete_post_meta($id, "meta_comment", $comment);
+
                 $response = $this->push_to_queue($permalink, 'live', false, 'publish');
             } else if (!empty($_POST['api_path'])){
                 $permalink = $_POST['api_path'];
@@ -963,6 +984,13 @@ EOD;
 
         }
 
+        function ajax_save_comment() {
+            $id = $_POST['post_id'];
+            $comment = $_POST['comment'];
+            update_post_meta($id, "meta_comment", $comment);
+            exit();
+        }
+
 
         public function ajax_check_sync() {
 
@@ -973,7 +1001,7 @@ EOD;
                 $id = $_POST['post_id'];
                 if (!$only_draft_sync) {
                     $response = $this->check_sync($id, $only_draft_sync);
-                }
+                }  
             } else if (!empty($_POST['api_path'])){
                 $permalink = $_POST['api_path'];
                 $response = $this->check_sync($permalink, $only_draft_sync);

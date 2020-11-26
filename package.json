@@ -7,7 +7,8 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "./node_modules/webpack/bin/webpack.js --watch ",
+    "build": "NODE_ENV=production ./node_modules/webpack/bin/webpack.js --mode production"
   },
   "author": "",
   "license": "ISC",

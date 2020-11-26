@@ -1,4 +1,5 @@
 import draftLiveDiffBtnHandler from './diff-view';
+
 const syncMetaBox = ($) => {
 
     let postDataString = $('#dls-post-data').text();
@@ -113,7 +114,7 @@ const syncMetaBox = ($) => {
     }
 
     const check = () => {
-
+        
         jQuery.ajax({
             type: "POST",
             url: "/wp-admin/admin-ajax.php",
@@ -128,11 +129,15 @@ const syncMetaBox = ($) => {
 
             syncButton.off('click').on('click', function() {
                 if (syncButtonEnabled) {
-
+                    const input = jQuery('#comment-input');
+                    const comment = input.val();
                     let ok = confirm('This will publish the content to the public live site. Are you sure?');
+                    let commentConfirmation = true;
+                    if (comment) {
+                        commentConfirmation = confirm(`There is a comment connected to this post, are you really sure you want to publish this to the public live site?\n\nComment:\n\n${comment}`);
+                    }
 
-                    if (ok) {
-
+                    if (ok && commentConfirmation) {
                         syncStatus.addClass('dsl--message-processing');
                         syncStatus.html('Publishing...');
                         //syncButton.html('Publishing...');
@@ -147,6 +152,9 @@ const syncMetaBox = ($) => {
                                 api_path: postData.apiPath,
                             }
                         }).done(function( msg ) {
+                            input.val('');
+                            input.addClass('display-none');
+                            jQuery('#comment-button').text('Add comment');
                             setSyncStatus(msg);
                         });
                     }
@@ -192,6 +200,8 @@ const syncMetaBox = ($) => {
                     }
                 }
             });
+
+            
 
         });
 
