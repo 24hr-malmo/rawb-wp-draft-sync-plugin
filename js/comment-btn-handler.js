@@ -9,7 +9,7 @@ const inputVal = input.val();
 
     commentButton.off('click').on('click', function() {
 
-        if(input.hasClass('display-none') && input.val()) {
+        if(input.hasClass('display-none') && inputVal) {
             commentButton.text('Hide comment');
             input.removeClass('display-none');
         } else if(input.val()) {
