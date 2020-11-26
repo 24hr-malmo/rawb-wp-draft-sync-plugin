@@ -12,7 +12,7 @@ const inputVal = input.val();
         if(input.hasClass('display-none') && inputVal) {
             commentButton.text('Hide comment');
             input.removeClass('display-none');
-        } else if(input.val()) {
+        } else if(inputVal) {
             commentButton.text('View comment');
             input.addClass('display-none');
         } else if(!input.hasClass('display-none') && !input.val()) {
