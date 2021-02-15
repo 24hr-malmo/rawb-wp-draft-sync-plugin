@@ -369,10 +369,20 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 $permalink = preg_replace($re, '', $permalink);
    				$re = '/__trashed/';
                 $permalink = preg_replace($re, '', $permalink);
+                
+                /**
+                 * Check if the permalink is pointing to the startpage.
+                 * If it is, we do NOT want to keep going to not risk
+                 * unpublishing it.
+                 */
+                $is_startpage = wp_make_link_relative($permalink) == '/';
+                if ($is_startpage) {
+                    return;
+                }
             }
-
+            
             $data = new stdclass();
-
+            
             $data->permalink = rtrim($this->replace_hosts($permalink), '/');
             $data->sync_check = $sync_check;
             $data->sync_tree_and_cache = $sync_tree_and_cache;
