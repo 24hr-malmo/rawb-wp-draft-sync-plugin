@@ -1,6 +1,5 @@
 import draftLiveDiffBtnHandler from './diff-view';
-const syncMetaBox = ($) => {
-
+const syncMetaBox = ($, isNewPost) => {
     let postDataString = $('#dls-post-data').text();
 
     if (!postDataString) {
@@ -27,9 +26,12 @@ const syncMetaBox = ($) => {
     let autoSyncDraftCounter = 0;
 
     function setSyncStatus(result) {
-
         if (!result) {
-            console.error('error in sync check');
+            if (isNewPost) {
+                syncStatus.html('Content is not saved yet.');
+            } else {
+                console.error('error in sync check');
+            }
             return;
         }
 
@@ -65,8 +67,11 @@ const syncMetaBox = ($) => {
         }
 
         if (result.inSyncSourceAndDraft) {
-
-            syncStatus.html('Published to draft site (non-public)');
+            if (result.contentInLive) {
+                syncStatus.html('Published to draft and live sites (public)');    
+            } else {
+                syncStatus.html('Published to draft site (non-public)');
+            }
             syncStatus.removeClass('dlsc--wp-not-in-sync');
             syncStatus.removeClass('dlsc--wp-not-in-sync-retrying');
 
