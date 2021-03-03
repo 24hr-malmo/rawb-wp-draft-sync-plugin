@@ -48,14 +48,6 @@
 
     $wp_base_dir = dirname($wp_base);
 
-    if(file_exists($wp_base_dir . '/wp-includes/formatting.php')) {
-        require( $wp_base_dir . '/wp-includes/formatting.php');
-    }
-
-    if(file_exists($wp_base_dir . '/wp-includes/link-template.php')) {
-        require( $wp_base_dir . '/wp-includes/link-template.php');
-    }
-
     require_once( '../lib/draft-live-sync-class.php' );
 
     if(class_exists( 'DraftLiveSync' )){
