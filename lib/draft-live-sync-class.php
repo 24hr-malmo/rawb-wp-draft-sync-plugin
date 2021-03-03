@@ -101,7 +101,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 add_filter( 'admin_menu', array( &$this, 'add_admin_pages'), 10, 2 );
                 add_action( 'parse_request', array( &$this, 'parse_requests'));
                 add_filter( 'gettext', array( &$this, 'change_publish_button'), 10, 2 );
-                add_filter( 'get_sample_permalink_html', array( &$this, 'set_correct_permalink'));
+                add_filter( 'get_sample_permalink', array( &$this, 'set_correct_permalink'));
                 add_action( 'admin_enqueue_scripts', array(&$this, 'enqueue_admin_scripts' ));
                 add_action( 'admin_head-post.php', array( &$this, 'hide_publishing_actions'));
                 add_action( 'admin_head-post-new.php', array( &$this, 'hide_publishing_actions'));
@@ -214,7 +214,6 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
 
         // Show another permalink in the edit page view
         function set_correct_permalink($url) {
-
             $public_host = $this->settings_page->get_overwrite_viewable_permalink();
             $wordpress_url = get_site_url();
 
@@ -222,7 +221,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 return str_replace($wordpress_url, $public_host, $url);
             }
 
-            return $url;
+            return "<h1>$url</h1>";
 
         }
 
