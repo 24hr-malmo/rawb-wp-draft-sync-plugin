@@ -221,7 +221,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 return str_replace($wordpress_url, $public_host, $url);
             }
 
-            return "<h1>$url</h1>";
+            return $url;
 
         }
 
