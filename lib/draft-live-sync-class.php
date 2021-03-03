@@ -884,9 +884,11 @@ EOD;
                 }
 
                 $response = $this->push_to_queue($permalink, 'unpublish', false, 'publish');
+                $response = apply_filters('draft_live_sync_post_unpublish_from_live', $id, $response);
             } else if (!empty($_POST['api_path'])){
                 $permalink = $_POST['api_path'];
                 $response = $this->push_to_queue($permalink, 'unpublish', false, 'publish');
+                $response = apply_filters('draft_live_sync_post_unpublish_from_live', $permalink, $response);
             }
 
             header( "Content-Type: application/json" );
@@ -935,9 +937,11 @@ EOD;
                 }
 
                 $response = $this->push_to_queue($permalink, 'live', false, 'publish');
+                $response = apply_filters('draft_live_sync_post_publish_to_live', $id, $response);
             } else if (!empty($_POST['api_path'])){
                 $permalink = $_POST['api_path'];
                 $response = $this->push_to_queue($permalink, 'live', false, 'publish');
+                $response = apply_filters('draft_live_sync_post_publish_to_live', $permalink, $response);
             }
 
             header( "Content-Type: application/json" );
@@ -983,10 +987,12 @@ EOD;
                 $id = $_POST['post_id'];
                 if (!$only_draft_sync) {
                     $response = $this->check_sync($id, $only_draft_sync);
+                    $response = apply_filters('draft_live_sync_post_check_sync', $response, $id);
                 }
             } else if (!empty($_POST['api_path'])){
                 $permalink = $_POST['api_path'];
                 $response = $this->check_sync($permalink, $only_draft_sync);
+                $response = apply_filters('draft_live_sync_post_check_sync', $response, $permalink);
             }
 
             header( "Content-Type: application/json" );
