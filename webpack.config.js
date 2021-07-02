@@ -1,6 +1,7 @@
 require('@babel/polyfill');
 const fs = require('fs');
 const path = require('path');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const pluginFileContent = fs.readFileSync('./index.php', 'utf8');
 const versionRe = /Version: ([\w\.]+)(\r|\n)/im;
@@ -57,7 +58,9 @@ module.exports = {
             },
         ]
     },
-    plugins: [ ],
+    plugins: [ 
+        new CleanWebpackPlugin(),
+    ],
     output: {
         filename: `[name]-${VERSION || '0.0.0'}.js`,
         chunkFilename: '[name].bundle.js',

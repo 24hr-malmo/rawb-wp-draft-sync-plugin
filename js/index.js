@@ -17,8 +17,9 @@ jQuery(document).ready(function ($) {
         hookData = $('#dls-hooks').length > 0 ? JSON.parse($('#dls-hooks').html()) : { hook: ''} ;
     } catch (err) { };
 
-    if (hookData.hook === 'post.php') {
-        syncMetaBox($);
+    if (hookData.hook === 'post.php' || hookData.hook === 'post-new.php') {
+        const isNewPost = hookData.hook === 'post-new.php';
+        syncMetaBox($, isNewPost);
     } else if (hookData.hook === 'nav-menus.php') {
         syncMetaBox($);
     } else if (hookData.hook.includes('sync_page_draft-live-sync-reset')) {
