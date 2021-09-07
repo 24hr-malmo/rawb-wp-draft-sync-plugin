@@ -102,7 +102,6 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
                 add_action( 'parse_request', array( &$this, 'parse_requests'));
                 add_filter( 'gettext', array( &$this, 'change_publish_button'), 10, 2 );
                 add_filter( 'get_sample_permalink', array( &$this, 'set_correct_permalink'));
-                add_filter( 'page_link', array( &$this, 'set_correct_permalink'));
                 add_action( 'admin_enqueue_scripts', array(&$this, 'enqueue_admin_scripts' ));
                 add_action( 'admin_head-post.php', array( &$this, 'hide_publishing_actions'));
                 add_action( 'admin_head-post-new.php', array( &$this, 'hide_publishing_actions'));

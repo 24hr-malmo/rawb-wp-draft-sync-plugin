@@ -106,7 +106,8 @@ const syncMetaBox = ($, isNewPost) => {
                 }
  
             } else {
-                check();
+                syncStatus.addClass('dlsc--wp-not-saved');
+                syncStatus.html('Draft not saved');
             }
 
             syncButton.addClass('button-disabled');
