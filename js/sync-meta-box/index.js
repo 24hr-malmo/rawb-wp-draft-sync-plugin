@@ -96,7 +96,7 @@ const syncMetaBox = ($, isNewPost) => {
                             api_path: postData.apiPath,
                         }
                     }).done(function( msg ) {
-                        setSyncStatus(msg);
+                        check();
                     });
 
                 } else {
@@ -152,7 +152,7 @@ const syncMetaBox = ($, isNewPost) => {
                                 api_path: postData.apiPath,
                             }
                         }).done(function( msg ) {
-                            setSyncStatus(msg);
+                            check();
                         });
                     }
                 }
@@ -189,7 +189,7 @@ const syncMetaBox = ($, isNewPost) => {
                                     api_path: postData.apiPath,
                                 }
                             }).done(function( msg ) {
-                                setSyncStatus(msg);
+                                check();
                             });
 
                         });
