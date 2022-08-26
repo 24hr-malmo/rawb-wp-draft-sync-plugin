@@ -346,7 +346,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
 
         }
 
-        function push_to_queue($permalink, $release = 'draft', $async = false, $status = 'publish', $check_only_draft_live = false, $sync_check = true, $sync_tree_and_cache = true, $custom_payload = false, $custom_payload_headers = false, $dont_fire_actions = false) {
+        function push_to_queue($permalink, $release = 'draft', $async = false, $status = 'publish', $check_only_draft_live = false, $sync_check = true, $sync_tree_and_cache = true, $custom_payload = false, $custom_payload_headers = false, $dont_fire_actions = false, $post_id = null) {
 
             $permalink = rtrim($permalink, '/');
             $this->check_site_id();
@@ -383,6 +383,7 @@ if ( ! class_exists( 'DraftLiveSync' ) ) {
             $data = new stdclass();
             
             $data->permalink = rtrim($this->replace_hosts($permalink), '/');
+            $data->externalId = $post_id ? $post_id : null;
             $data->sync_check = $sync_check;
             $data->sync_tree_and_cache = $sync_tree_and_cache;
 
@@ -781,7 +782,7 @@ EOD;
                 return;
             }
 
-            $this->push_to_queue($permalink, 'draft', false, 'trash');
+            $this->push_to_queue($permalink, 'draft', false, 'trash', undefined, undefined, undefined, undefined, undefined, undefined, $post_id);
 
 		}
 
