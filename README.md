@@ -23,6 +23,9 @@ add_filter('dls_additional_endpoints', 'rawb_add_additional_endpoints', 10, 1);
 
 # Changelog
 
+### [2022-08-26] v0.10.6
+* Fixed an error where deleting resources did no delete the resource from the content database.
+
 ### [2020-03-03] v0.10.2
 * Fixed a double import in ajax/check-sync.php
 * Added filters for publish/unpublish and sync check in for live (used by SONY documentation service)
