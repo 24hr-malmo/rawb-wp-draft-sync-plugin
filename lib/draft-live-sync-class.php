@@ -883,11 +883,11 @@ EOD;
                     $permalink = '/json/api/general/menu/header_menu';
                 }
 
-                $response = $this->push_to_queue($permalink, 'unpublish', false, 'publish');
+                $response = $this->push_to_queue($permalink, 'unpublish', false, 'publish', undefined, undefined, undefined, undefined, undefined, undefined, $id);
                 $response = apply_filters('draft_live_sync_post_unpublish_from_live', $id, $response);
             } else if (!empty($_POST['api_path'])){
                 $permalink = $_POST['api_path'];
-                $response = $this->push_to_queue($permalink, 'unpublish', false, 'publish');
+                $response = $this->push_to_queue($permalink, 'unpublish', false, 'publish', undefined, undefined, undefined, undefined, undefined, undefined, $id);
                 $response = apply_filters('draft_live_sync_post_unpublish_from_live', $permalink, $response);
             }
 
