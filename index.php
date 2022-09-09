@@ -4,7 +4,7 @@
 Plugin Name: Draft/Live Sync for Content Service
 Plugin URI: http://24hr.se
 Description: Saves content to a Draft Content Service and gives the possibility to push the content to live
-Version: 0.10.7
+Version: 0.10.8
 Author: Camilo Tapia <camilo.tapia@24hr.se>
 */
 
